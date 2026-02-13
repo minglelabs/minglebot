@@ -1,82 +1,87 @@
 flowchart TD
     %% === PROJECT GOALS ===
-    %% Ultimate Goal: Complete a local-first data hub usable by personal AI agents
-    %% Current Goal: Prepare the v1 implementation path for ingest-normalize-index pipeline
+    %% Ultimate Goal: Complete a local-first personal data hub usable by user-owned AI agents
+    %% Current Goal: Ship v1 manual-batch import with reliable dedupe/upsert and agent-usable output
 
     %% === COMPLETED WORK ===
     %% @project_start [start, closed, 2026-02-13, nam]
-    project_start("Project Kickoff<br/><sub>Defined the goal to centralize<br/>chat data into a local filesystem<br/>for personal AI workflows and<br/>set the initial project scope</sub>")
-
-    %% @repo_bootstrap [ai-task, closed, 2026-02-13, nam]
-    repo_bootstrap("Repository Bootstrap<br/><sub>Created base Git repository and<br/>license files, then prepared a<br/>minimal project skeleton to<br/>support doc-first direction setting</sub>")
+    project_start("Project Kickoff<br/><sub>Defined local-first mission and<br/>set focus on centralizing chat data<br/>for practical personal AI workflows</sub>")
 
     %% @readme_foundation [ai-task, closed, 2026-02-13, nam]
-    readme_foundation("README Foundation<br/><sub>Documented mission, principles,<br/>and scope boundaries, emphasizing<br/>local-first ownership and agent<br/>readiness as core project values</sub>")
-
-    %% @branding_iteration [ai-task, closed, 2026-02-13, nam]
-    branding_iteration("Branding Iteration<br/><sub>Refined project messaging and<br/>updated warm-tone banner assets<br/>to improve first impression and<br/>clarify product positioning</sub>")
+    readme_foundation("README Foundation<br/><sub>Documented mission, scope, and<br/>manual-batch v1 direction for public<br/>repo visitors and contributors</sub>")
 
     %% @architecture_v1 [ai-task, closed, 2026-02-13, nam]
-    architecture_v1("Architecture v1 Draft<br/><sub>Defined adapter separation, shared<br/>pipeline lifecycle, mailbox strategy,<br/>and local data layout to lock an<br/>implementable execution order</sub>")
+    architecture_v1("Architecture v1<br/><sub>Defined provider adapters, import<br/>pipeline stages, and local storage<br/>contracts for implementable v1</sub>")
 
-    %% @vizvibe_setup [ai-task, closed, 2026-02-13, nam]
-    vizvibe_setup("VizVibe Setup<br/><sub>Initialized `vizvibe.mmd` as a<br/>living trajectory map in English<br/>to preserve context across sessions<br/>and expose dependency flow clearly</sub>")
+    %% @filesystem_format_v1 [ai-task, closed, 2026-02-13, nam]
+    filesystem_format_v1("Filesystem Format v1<br/><sub>Specified raw/provider/canonical<br/>layout with dedupe/upsert rules and<br/>agent-searchable NDJSON outputs</sub>")
 
-    %% === FUTURE WORK ===
-    %% @core_orchestrator [ai-task, opened, 2026-02-13, nam]
-    core_orchestrator("Core Orchestrator<br/><sub>Implement job state machine and<br/>local data layout as code so every<br/>post-ingest stage runs through one<br/>consistent execution engine</sub>")
+    %% @uiux_v1_spec [ai-task, closed, 2026-02-13, nam]
+    uiux_v1_spec("UI/UX Spec v1<br/><sub>Defined import-first desktop flow,<br/>run states, dedupe summaries, and<br/>non-developer friendly UX baseline</sub>")
 
-    %% @chatgpt_adapter [ai-task, opened, 2026-02-13, nam]
-    chatgpt_adapter("ChatGPT Adapter<br/><sub>Implement the end-to-end export<br/>path from post-login trigger to<br/>artifact acquisition as the first<br/>reliable v1 production path</sub>")
+    %% @batch_import_decision [ai-task, closed, 2026-02-13, nam]
+    batch_import_decision("v1 Batch Import Decision<br/><sub>Locked v1 to user-driven package<br/>imports and removed mandatory email<br/>automation dependency from scope</sub>")
 
-    %% @claude_adapter [ai-task, opened, 2026-02-13, nam]
-    claude_adapter("Claude Adapter<br/><sub>Handle provider-specific UI and<br/>format differences while integrating<br/>with the shared pipeline to validate<br/>multi-provider architecture stability</sub>")
+    %% === V1 BUILD TRACK ===
+    %% @desktop_shell [ai-task, opened, 2026-02-13, nam]
+    desktop_shell("Desktop Shell<br/><sub>Implement local app shell and core<br/>navigation: Home, Import, Runs,<br/>Data, Settings</sub>")
 
-    %% @mail_connector [ai-task, opened, 2026-02-13, nam]
-    mail_connector("Mailbox Connector<br/><sub>Build API/IMAP-first retrieval with<br/>browser fallback for export emails<br/>to reduce brittle webmail UI<br/>dependency in acquisition flow</sub>")
+    %% @import_intake [ai-task, opened, 2026-02-13, nam]
+    import_intake("Import Intake Engine<br/><sub>Handle package selection, format<br/>validation, extraction to raw, and<br/>job metadata recording</sub>")
 
-    %% @normalize_index [ai-task, opened, 2026-02-13, nam]
-    normalize_index("Normalize and Index<br/><sub>Convert raw artifacts into canonical<br/>schema and build `grep`-friendly<br/>indexes so user-owned agents can<br/>query data immediately</sub>")
+    %% @chatgpt_parser_mapper [ai-task, opened, 2026-02-13, nam]
+    chatgpt_parser_mapper("ChatGPT Parser/Mapper<br/><sub>Convert provider export into<br/>provider + canonical datasets with<br/>stable IDs and provenance fields</sub>")
 
-    %% @gemini_strategy [ai-task, opened, 2026-02-13, nam]
-    gemini_strategy("Gemini Strategy<br/><sub>Validate officially stable collection<br/>paths and integrate incrementally<br/>to expand provider coverage beyond<br/>the initial v1 boundary safely</sub>")
+    %% @claude_parser_mapper [ai-task, opened, 2026-02-13, nam]
+    claude_parser_mapper("Claude Parser/Mapper<br/><sub>Implement provider-specific parse<br/>logic and canonical mapping with<br/>dedupe-safe upsert behavior</sub>")
+
+    %% @dedupe_upsert_engine [ai-task, opened, 2026-02-13, nam]
+    dedupe_upsert_engine("Dedupe/Upsert Engine<br/><sub>Ensure repeated full exports update<br/>existing canonical records without<br/>uncontrolled duplication</sub>")
+
+    %% @runs_and_result_ui [ai-task, opened, 2026-02-13, nam]
+    runs_and_result_ui("Runs and Result UX<br/><sub>Expose run history, status stages,<br/>and change counters: new/updated/<br/>unchanged/failed</sub>")
+
+    %% @agent_handoff [ai-task, opened, 2026-02-13, nam]
+    agent_handoff("Agent Handoff Surface<br/><sub>Provide copy-ready `rg`/`jq`/`find`<br/>commands and clear data-root paths<br/>for immediate post-import usage</sub>")
+
+    %% @gemini_path_v1_5 [ai-task, opened, 2026-02-13, nam]
+    gemini_path_v1_5("Gemini Path (v1.5)<br/><sub>Integrate stable collection path<br/>after ChatGPT/Claude v1 pipeline is<br/>proven in production usage</sub>")
+
+    %% @v1_done [milestone, opened, 2026-02-13, nam]
+    v1_done("V1 Milestone Complete<br/><sub>Manual batch import works reliably<br/>for ChatGPT and Claude with dedupe,<br/>upsert, and agent-ready outputs</sub>")
 
     %% @ultimate_goal [end, opened, 2026-02-13, nam]
-    ultimate_goal("Personal Data Hub Complete<br/><sub>Unify ChatGPT, Claude, and Gemini<br/>data in a local-first architecture<br/>that is immediately usable by<br/>user-owned AI agent systems</sub>")
+    ultimate_goal("Personal Data Hub Complete<br/><sub>Unified local-first personal data<br/>platform usable by user-owned AI<br/>agent systems at daily workflow level</sub>")
 
     %% === CONNECTIONS ===
-    project_start --> repo_bootstrap
-    repo_bootstrap --> readme_foundation
-    readme_foundation --> branding_iteration
-    readme_foundation --> architecture_v1
-    architecture_v1 --> vizvibe_setup
-    architecture_v1 --> core_orchestrator
-    core_orchestrator --> chatgpt_adapter --> claude_adapter --> mail_connector --> normalize_index --> gemini_strategy
-    vizvibe_setup -.-> ultimate_goal
-    chatgpt_adapter -.-> ultimate_goal
-    claude_adapter -.-> ultimate_goal
-    normalize_index -.-> ultimate_goal
-    gemini_strategy -.-> ultimate_goal
+    project_start --> readme_foundation --> architecture_v1 --> filesystem_format_v1 --> uiux_v1_spec --> batch_import_decision
+    batch_import_decision --> desktop_shell --> import_intake --> chatgpt_parser_mapper --> claude_parser_mapper --> dedupe_upsert_engine --> runs_and_result_ui --> agent_handoff --> v1_done
+    v1_done --> gemini_path_v1_5 --> ultimate_goal
 
     %% === RECENT WORK HIGHLIGHT ===
     subgraph recent [RECENT]
-        vizvibe_setup
+        batch_import_decision
+        filesystem_format_v1
+        uiux_v1_spec
     end
 
     %% === STYLES ===
-    style project_start fill:#1a1a2e,stroke:#a78bfa,color:#c4b5fd,stroke-width:1px
-    style repo_bootstrap fill:#1a1a2e,stroke:#a78bfa,color:#c4b5fd,stroke-width:1px
-    style readme_foundation fill:#1a1a2e,stroke:#a78bfa,color:#c4b5fd,stroke-width:1px
-    style branding_iteration fill:#1a1a2e,stroke:#a78bfa,color:#c4b5fd,stroke-width:1px
-    style architecture_v1 fill:#1a1a2e,stroke:#a78bfa,color:#c4b5fd,stroke-width:1px
+    style project_start fill:#1f2937,stroke:#f59e0b,color:#fef3c7,stroke-width:1px
+    style readme_foundation fill:#1f2937,stroke:#f59e0b,color:#fef3c7,stroke-width:1px
+    style architecture_v1 fill:#1f2937,stroke:#f59e0b,color:#fef3c7,stroke-width:1px
+    style filesystem_format_v1 fill:#1f2937,stroke:#f59e0b,color:#fef3c7,stroke-width:1px
+    style uiux_v1_spec fill:#1f2937,stroke:#f59e0b,color:#fef3c7,stroke-width:1px
+    style batch_import_decision fill:#3f2a10,stroke:#fbbf24,color:#fffbeb,stroke-width:2px
 
-    style core_orchestrator fill:#1a1a2e,stroke:#4ade80,color:#86efac,stroke-width:1px
-    style chatgpt_adapter fill:#1a1a2e,stroke:#4ade80,color:#86efac,stroke-width:1px
-    style claude_adapter fill:#1a1a2e,stroke:#4ade80,color:#86efac,stroke-width:1px
-    style mail_connector fill:#1a1a2e,stroke:#4ade80,color:#86efac,stroke-width:1px
-    style normalize_index fill:#1a1a2e,stroke:#4ade80,color:#86efac,stroke-width:1px
-    style gemini_strategy fill:#1a1a2e,stroke:#4ade80,color:#86efac,stroke-width:1px
-    style ultimate_goal fill:#1a1a2e,stroke:#4ade80,color:#86efac,stroke-width:1px
+    style desktop_shell fill:#111827,stroke:#34d399,color:#a7f3d0,stroke-width:1px
+    style import_intake fill:#111827,stroke:#34d399,color:#a7f3d0,stroke-width:1px
+    style chatgpt_parser_mapper fill:#111827,stroke:#34d399,color:#a7f3d0,stroke-width:1px
+    style claude_parser_mapper fill:#111827,stroke:#34d399,color:#a7f3d0,stroke-width:1px
+    style dedupe_upsert_engine fill:#111827,stroke:#34d399,color:#a7f3d0,stroke-width:1px
+    style runs_and_result_ui fill:#111827,stroke:#34d399,color:#a7f3d0,stroke-width:1px
+    style agent_handoff fill:#111827,stroke:#34d399,color:#a7f3d0,stroke-width:1px
+    style gemini_path_v1_5 fill:#111827,stroke:#34d399,color:#a7f3d0,stroke-width:1px
+    style v1_done fill:#1f2937,stroke:#fbbf24,color:#fde68a,stroke-width:2px
+    style ultimate_goal fill:#1f2937,stroke:#34d399,color:#a7f3d0,stroke-width:2px
 
-    style vizvibe_setup fill:#2d1f4e,stroke:#c084fc,color:#e9d5ff,stroke-width:2px
-    style recent fill:transparent,stroke:#c084fc,color:#c084fc,stroke-width:2px,stroke-dasharray:5 5
+    style recent fill:transparent,stroke:#f59e0b,color:#f59e0b,stroke-width:2px,stroke-dasharray:5 5

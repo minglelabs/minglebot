@@ -50,6 +50,22 @@ Why this mode first:
 - Lower auth/security surface
 - Faster to ship reliable value
 
+## v1 Objectives (Concrete)
+
+v1 is successful when the following are true:
+
+1. Users can import full export packages from ChatGPT and Claude through a local desktop UI flow.
+2. Repeated full-export imports are deduped/upserted correctly (no uncontrolled canonical duplication).
+3. `canonical/messages.ndjson` and related datasets remain stable and agent-searchable (`rg`, `jq`, `find`).
+4. Import runs provide transparent status and result counters (`new`, `updated`, `unchanged`, `failed`).
+5. All processing runs locally by default with clear data-root visibility.
+6. Users can immediately run copy-ready shell snippets after import to explore their data.
+
+v1 explicitly excludes:
+
+- mandatory browser/email automation for export retrieval
+- cloud dependency for core ingest and storage
+
 ## Use Your Centralized Filesystem
 
 The point is not just exporting data.  
