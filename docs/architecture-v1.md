@@ -22,7 +22,7 @@ Why:
 Recommended shape:
 
 - Desktop shell (UI): Electron or Tauri
-- Local core service: orchestrates jobs, browser-use, parsing, normalization
+- Local core service: orchestrates jobs, browser-use, parsing, mapping, persistence
 - Local data store: files + metadata index
 
 About OpenClaw:
@@ -44,7 +44,7 @@ Reason:
 Use this split:
 
 - `Provider Adapter` (service-specific)
-- `Shared Pipeline` (service-agnostic core)
+- `Shared Pipeline` (service-agnostic core for non-semantic processing)
 
 ## 3. Are these 4 browser-use steps needed?
 
@@ -73,7 +73,7 @@ Why:
 Use hybrid architecture:
 
 - Edge layer: service-first (provider adapters)
-- Core layer: function-first (download, unzip, normalize, index)
+- Core layer: function-first (download, unzip, validate, persist, index)
 
 Suggested structure:
 
@@ -86,8 +86,8 @@ src/
     auth-wait/              # login/session detection helpers
     inbox/                  # email fetch abstraction (imap/api/browser fallback)
     artifacts/              # download, checksum, unzip
-    normalize/              # common schema mapping
-    storage/                # local layout + manifests + index
+    canonical/              # canonical schema writer
+    storage/                # local layout + manifests + indexes
   providers/
     chatgpt/
       browser-export.ts
@@ -121,20 +121,22 @@ Pipeline:
 1. Acquire artifact (zip/html/json/link export)
 2. Verify + archive raw artifact (`raw/`)
 3. Extract/decompress
-4. Provider parser -> canonical intermediate
-5. Normalize to common schema
-6. Write final dataset (`normalized/`)
-7. Build search-friendly indexes/manifests (`index/`)
+4. Provider parser -> provider records
+5. Provider mapper -> minimal canonical schema
+6. Write final datasets (`provider/`, `canonical/`)
+7. Build search-friendly indexes/manifests (`indexes/`)
 
 Recommendation:
 
 - Shared pipeline engine: single program
-- Parser/mapper plugins: provider-specific
+- Parser/mapper plugins: provider-specific (semantic mapping is not shared)
 
 This balances:
 
 - Consistency (single lifecycle)
 - Extensibility (provider plugin growth)
+
+Related format spec: [`docs/filesystem-format-v1.md`](./filesystem-format-v1.md)
 
 ## 6. Capability matrix (v1 assumptions)
 
@@ -157,11 +159,13 @@ Design principle: "human-readable first, grep-able always"
 data/
   raw/
     <provider>/<yyyy-mm-dd>/<artifact files>
-  normalized/
-    chats.ndjson
+  provider/
+    <provider>/*.ndjson
+  canonical/
+    conversations.ndjson
     messages.ndjson
-    attachments/
-  index/
+    attachments.ndjson
+  indexes/
     manifest.json
     by-provider/
     by-date/
@@ -196,7 +200,7 @@ State machine:
 2. ChatGPT adapter end-to-end
 3. Claude adapter end-to-end
 4. Mail inbox connector (API/IMAP first, browser fallback)
-5. Normalization + grep-friendly indexing
+5. Provider mapping + canonical writing + grep-friendly indexing
 6. Gemini strategy implementation (based on officially stable path)
 
 ## 10. Images and attachments policy
@@ -205,7 +209,7 @@ Email export payloads can differ by provider and over time.
 
 So v1 should treat media with a defensive strategy:
 
-1. If binary files are present in export artifact, store under `normalized/attachments/`
+1. If binary files are present in export artifact, store under `blobs/` and reference from `canonical/attachments.ndjson`
 2. If only URLs/references exist, keep a metadata record and optional fetch job
 3. Keep message text usable even when media fetch fails
 4. Mark every media item with `status = embedded | linked | missing`

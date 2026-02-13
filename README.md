@@ -35,6 +35,31 @@ Initial emphasis:
 
 After this foundation, the scope expands toward broader personal data domains.
 
+## Use Your Centralized Filesystem
+
+The point is not just exporting data.  
+The point is making that local data immediately usable by your own AI agent workflows.
+
+Start with basic shell-native access patterns:
+
+```bash
+# Search all messages by keyword
+rg -n "project|invoice|meeting" "$MINGLE_DATA_ROOT/canonical/messages.ndjson"
+
+# Filter only one provider
+jq -c 'select(.provider=="chatgpt")' "$MINGLE_DATA_ROOT/canonical/messages.ndjson" | head
+
+# Inspect attachment status
+jq -c 'select(.status!="embedded")' "$MINGLE_DATA_ROOT/canonical/attachments.ndjson" | head
+```
+
+This is the initial product emphasis:
+
+- Any user agent should be able to explore personal data with `grep`/`find`/`jq`.
+- Data should remain readable and stable on local filesystem without proprietary lock-in.
+
+Filesystem format spec: [`docs/filesystem-format-v1.md`](./docs/filesystem-format-v1.md)
+
 ## Why This Matters
 
 Centralization alone is not enough, especially for non-developers.
@@ -86,7 +111,7 @@ flowchart LR
 ## Roadmap
 
 1. Reliable ingestion pipeline for ChatGPT/Claude/Gemini chat data
-2. Common local schema + metadata normalization
+2. Provider-specific parsing + minimal canonical schema mapping
 3. Tool-calling surface for personal agent systems
 4. Expansion beyond chat into broader personal data
 
@@ -96,6 +121,7 @@ Early-stage repository.
 Current focus is mission definition and architecture setup for implementation.
 
 Architecture draft: [`docs/architecture-v1.md`](./docs/architecture-v1.md)
+Data format draft: [`docs/filesystem-format-v1.md`](./docs/filesystem-format-v1.md)
 
 ## Contributing
 
