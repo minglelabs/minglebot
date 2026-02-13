@@ -1,90 +1,91 @@
 # Minglebot
 
 <p align="center">
-  <strong>Centralize your personal data locally, then make it AI-ready.</strong>
+  <strong>Centralize personal data on your local filesystem, then make it usable by AI agents.</strong>
 </p>
 
 <p align="center">
-  <em>Browser-use + TypeScript based automation for personal data aggregation and agent tool-calling.</em>
+  <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-Primary-blue">
+  <img alt="Local First" src="https://img.shields.io/badge/Architecture-Local--First-2ea44f">
+  <img alt="Automation" src="https://img.shields.io/badge/Focus-Browser%20Automation-orange">
 </p>
 
----
+<p align="center">
+  <em>Browser-use + TypeScript automation for personal data aggregation and practical tool-calling workflows.</em>
+</p>
 
-## What This Project Is
+## Mission
 
-Minglebot is an open-source project to centralize personal data into a single, well-structured local filesystem hub.
+Minglebot is an open-source project to build a single, structured local data hub for personal AI workflows.
 
-The first milestone is focused on chat data:
+Phase 1 is clear and concrete:
 
-- ChatGPT
-- Claude
-- Gemini
+- Collect chat data from ChatGPT, Claude, and Gemini
+- Normalize and organize it into one local filesystem location
+- Make it directly usable by personal agent systems
 
-After that, the scope expands to broader personal data that can be accessed in practical ways.
+After this foundation, the scope expands toward broader personal data domains.
 
-## First Goal
+## Why This Matters
 
-Automate collection and organization of chat data from ChatGPT, Claude, and Gemini into one local directory.
+Centralization alone is not enough, especially for non-developers.
 
-Why this first:
+If data only gets dumped into a folder, the practical value stays low.  
+Minglebot therefore treats tool-calling integration as a first-class product concern.
 
-- Most users already have valuable chat history spread across tools.
-- Centralizing this data creates a portable personal memory layer.
-- It becomes a consistent data source for downstream AI workflows.
-
-## Product Direction
-
-This project is not just about dumping files into one folder.
-
-For non-developers, simple data export is not enough.  
-So Minglebot is designed with **tool-calling support** so users can actually use their centralized data through agent systems such as:
+Target usage includes personal agent environments such as:
 
 - Claude Code
 - Claude Cowork
 - Codex
 - OpenClaw
-- and other personal agent setups
+- Other custom/local agent stacks
 
-The core intent is:
+## Product Principles
 
-1. Gather personal data locally.
-2. Structure it for reliable access.
-3. Make it directly usable by AI agents.
+1. Local-first by default: user keeps ownership of raw files.
+2. Usability for non-developers: minimal-click workflows.
+3. Agent-ready structure: data should be queryable and callable.
+4. Practical security boundary: user performs login/authorization steps manually; repetitive post-auth work is automated.
 
-## Automation Boundary
+## Scope Boundary (Important)
 
-Minglebot focuses on automating everything **except** user-auth-required steps.
+Minglebot does not try to automate everything:
 
-- User handles login/authorization manually when needed.
-- Minglebot automates the rest of the repetitive workflow.
+- User handles sensitive auth actions directly (login, grant, verification).
+- Minglebot automates the remaining repeatable collection and organization steps.
 
-This keeps the system practical while respecting security and account constraints.
+This keeps the system realistic, safer, and easier to maintain.
 
-## Tech Focus
+## High-Level Flow
 
-- Main language: **TypeScript**
-- Browser automation approach: **browser-use based workflow**
-- Storage strategy: **local filesystem first**
+```mermaid
+flowchart LR
+    A["User Performs Login/Auth"] --> B["Minglebot Browser Automation"]
+    B --> C["Collect Chat Data (ChatGPT / Claude / Gemini)"]
+    C --> D["Normalize + Store in Local Filesystem Hub"]
+    D --> E["Expose Agent-Friendly Tool Calls"]
+    E --> F["Use via Claude Code / Codex / OpenClaw / etc."]
+```
 
-## Why Local-First
+## Tech Direction
 
-- User owns raw data files.
-- No forced cloud lock-in.
-- Easy inspection, backup, and migration.
-- Better fit for personal agent experimentation.
+- Primary language: TypeScript
+- Automation style: browser-use based workflows
+- Storage model: local filesystem as source of truth
 
-## High-Level Roadmap
+## Roadmap
 
-1. Chat data ingestion from ChatGPT/Claude/Gemini.
-2. Unified local schema and metadata normalization.
-3. Tool-calling interfaces for agent systems.
-4. Expansion to broader personal data domains.
+1. Reliable ingestion pipeline for ChatGPT/Claude/Gemini chat data
+2. Common local schema + metadata normalization
+3. Tool-calling surface for personal agent systems
+4. Expansion beyond chat into broader personal data
 
 ## Status
 
-Early stage.  
-This repository currently defines the mission and initial architecture direction.
+Early-stage repository.  
+Current focus is mission definition and architecture setup for implementation.
 
----
+## Contributing
 
-If you care about personal AI workflows, data ownership, and practical local-first systems, contributions are welcome.
+If you care about local-first personal AI systems, data ownership, and practical agent workflows, contributions are welcome.
