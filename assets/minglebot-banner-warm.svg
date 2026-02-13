@@ -1,9 +1,9 @@
 <svg width="1280" height="360" viewBox="0 0 1280 360" fill="none" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <linearGradient id="bg" x1="36" y1="24" x2="1244" y2="336" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#FDBA74"/>
-      <stop offset="0.5" stop-color="#FDE68A"/>
-      <stop offset="1" stop-color="#FFF7CC"/>
+      <stop stop-color="#F59E0B"/>
+      <stop offset="0.5" stop-color="#FCD34D"/>
+      <stop offset="1" stop-color="#FEF3C7"/>
     </linearGradient>
     <filter id="soft" x="-40%" y="-40%" width="180%" height="180%">
       <feGaussianBlur stdDeviation="24"/>
@@ -13,8 +13,8 @@
   <rect x="18" y="18" width="1244" height="324" rx="28" fill="url(#bg)"/>
   <rect x="18.5" y="18.5" width="1243" height="323" rx="27.5" stroke="#FFFFFF" stroke-opacity="0.24"/>
 
-  <circle cx="220" cy="90" r="88" fill="#F59E0B" fill-opacity="0.18" filter="url(#soft)"/>
-  <circle cx="1030" cy="285" r="96" fill="#FFF3B0" fill-opacity="0.3" filter="url(#soft)"/>
+  <circle cx="220" cy="90" r="88" fill="#EA580C" fill-opacity="0.2" filter="url(#soft)"/>
+  <circle cx="1030" cy="285" r="96" fill="#FDE68A" fill-opacity="0.26" filter="url(#soft)"/>
 
   <text x="640" y="178" text-anchor="middle" fill="#7C2D12" font-family="Segoe UI, Arial, sans-serif" font-size="92" font-weight="800">
     MingleBot
