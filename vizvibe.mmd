@@ -1,48 +1,48 @@
 flowchart TD
     %% === PROJECT GOALS ===
-    %% Ultimate Goal: 개인 AI 에이전트가 바로 활용 가능한 로컬 퍼스트 데이터 허브 완성
-    %% Current Goal: 수집-정규화-인덱싱 파이프라인 v1 구현 기반 정리
+    %% Ultimate Goal: Complete a local-first data hub usable by personal AI agents
+    %% Current Goal: Prepare the v1 implementation path for ingest-normalize-index pipeline
 
     %% === COMPLETED WORK ===
     %% @project_start [start, closed, 2026-02-13, nam]
-    project_start("프로젝트 시작<br/><sub>개인 AI 워크플로우를 위해<br/>대화 데이터를 로컬 파일시스템에<br/>모으는 목표를 정의하고<br/>초기 작업 범위를 설정함</sub>")
+    project_start("Project Kickoff<br/><sub>Defined the goal to centralize<br/>chat data into a local filesystem<br/>for personal AI workflows and<br/>set the initial project scope</sub>")
 
     %% @repo_bootstrap [ai-task, closed, 2026-02-13, nam]
-    repo_bootstrap("저장소 초기 구성<br/><sub>기본 Git 저장소와 라이선스를 만들고<br/>프로젝트의 최소 골격을 마련해<br/>문서 중심으로 방향을 정리할<br/>출발 지점을 확보함</sub>")
+    repo_bootstrap("Repository Bootstrap<br/><sub>Created base Git repository and<br/>license files, then prepared a<br/>minimal project skeleton to<br/>support doc-first direction setting</sub>")
 
     %% @readme_foundation [ai-task, closed, 2026-02-13, nam]
-    readme_foundation("README 기반 정리<br/><sub>미션, 원칙, 범위 경계를 명시해<br/>로컬 퍼스트와 에이전트 활용성을<br/>핵심 가치로 문서화하고<br/>초기 로드맵을 공개함</sub>")
+    readme_foundation("README Foundation<br/><sub>Documented mission, principles,<br/>and scope boundaries, emphasizing<br/>local-first ownership and agent<br/>readiness as core project values</sub>")
 
     %% @branding_iteration [ai-task, closed, 2026-02-13, nam]
-    branding_iteration("배너/메시지 다듬기<br/><sub>프로젝트 소개 톤을 반복 개선하고<br/>웜 톤 배너 자산을 반영해<br/>리포지토리 첫인상을 정리하며<br/>핵심 포지셔닝을 명확화함</sub>")
+    branding_iteration("Branding Iteration<br/><sub>Refined project messaging and<br/>updated warm-tone banner assets<br/>to improve first impression and<br/>clarify product positioning</sub>")
 
     %% @architecture_v1 [ai-task, closed, 2026-02-13, nam]
-    architecture_v1("아키텍처 v1 문서화<br/><sub>어댑터 분리, 공용 파이프라인,<br/>메일 커넥터 전략과 데이터 레이아웃을<br/>정리해 구현 우선순위를<br/>실행 가능한 수준으로 고정함</sub>")
+    architecture_v1("Architecture v1 Draft<br/><sub>Defined adapter separation, shared<br/>pipeline lifecycle, mailbox strategy,<br/>and local data layout to lock an<br/>implementable execution order</sub>")
 
     %% @vizvibe_setup [ai-task, closed, 2026-02-13, nam]
-    vizvibe_setup("VizVibe 초기 설정<br/><sub>프로젝트 궤적을 한국어로 정리한<br/>`vizvibe.mmd`를 구성해 세션 간<br/>문맥 손실을 줄이고 다음 작업의<br/>의존관계를 한눈에 보이게 함</sub>")
+    vizvibe_setup("VizVibe Setup<br/><sub>Initialized `vizvibe.mmd` as a<br/>living trajectory map in English<br/>to preserve context across sessions<br/>and expose dependency flow clearly</sub>")
 
     %% === FUTURE WORK ===
     %% @core_orchestrator [ai-task, opened, 2026-02-13, nam]
-    core_orchestrator("오케스트레이터 구현<br/><sub>작업 상태 머신과 로컬 데이터 레이아웃을<br/>코드로 고정해 수집 이후 단계가<br/>일관된 파이프라인으로 이어지도록<br/>핵심 실행 엔진을 마련함</sub>")
+    core_orchestrator("Core Orchestrator<br/><sub>Implement job state machine and<br/>local data layout as code so every<br/>post-ingest stage runs through one<br/>consistent execution engine</sub>")
 
     %% @chatgpt_adapter [ai-task, opened, 2026-02-13, nam]
-    chatgpt_adapter("ChatGPT 어댑터 구현<br/><sub>로그인 이후 내보내기 요청부터<br/>아티팩트 확보까지 연결해<br/>v1 첫 번째 실사용 경로를<br/>종단 간으로 검증함</sub>")
+    chatgpt_adapter("ChatGPT Adapter<br/><sub>Implement the end-to-end export<br/>path from post-login trigger to<br/>artifact acquisition as the first<br/>reliable v1 production path</sub>")
 
     %% @claude_adapter [ai-task, opened, 2026-02-13, nam]
-    claude_adapter("Claude 어댑터 구현<br/><sub>서비스별 UI/포맷 차이를 분리하고<br/>공용 파이프라인과 결합해<br/>다중 제공자 구조의 안정성을<br/>실제 코드로 확인함</sub>")
+    claude_adapter("Claude Adapter<br/><sub>Handle provider-specific UI and<br/>format differences while integrating<br/>with the shared pipeline to validate<br/>multi-provider architecture stability</sub>")
 
     %% @mail_connector [ai-task, opened, 2026-02-13, nam]
-    mail_connector("메일 커넥터 구축<br/><sub>내보내기 링크 수신 단계를 위해<br/>API/IMAP 우선 경로와 브라우저 대체를<br/>설계해 취약한 UI 의존도를<br/>낮추는 수집 경로를 확보함</sub>")
+    mail_connector("Mailbox Connector<br/><sub>Build API/IMAP-first retrieval with<br/>browser fallback for export emails<br/>to reduce brittle webmail UI<br/>dependency in acquisition flow</sub>")
 
     %% @normalize_index [ai-task, opened, 2026-02-13, nam]
-    normalize_index("정규화/인덱스 구현<br/><sub>raw 산출물을 공통 스키마로 변환하고<br/>`grep` 친화 인덱스를 생성해<br/>사용자 에이전트가 바로 조회 가능한<br/>형태로 데이터를 노출함</sub>")
+    normalize_index("Normalize and Index<br/><sub>Convert raw artifacts into canonical<br/>schema and build `grep`-friendly<br/>indexes so user-owned agents can<br/>query data immediately</sub>")
 
     %% @gemini_strategy [ai-task, opened, 2026-02-13, nam]
-    gemini_strategy("Gemini 전략 확장<br/><sub>공식적으로 안정적인 수집 경로를<br/>검증한 뒤 단계적으로 통합해<br/>초기 v1 범위를 넘는 제공자 확장을<br/>안전하게 진행함</sub>")
+    gemini_strategy("Gemini Strategy<br/><sub>Validate officially stable collection<br/>paths and integrate incrementally<br/>to expand provider coverage beyond<br/>the initial v1 boundary safely</sub>")
 
     %% @ultimate_goal [end, opened, 2026-02-13, nam]
-    ultimate_goal("개인 데이터 허브 완성<br/><sub>ChatGPT, Claude, Gemini 데이터를<br/>로컬 퍼스트 구조로 통합하고<br/>사용자 소유 AI 에이전트가 바로<br/>활용 가능한 운영 상태에 도달함</sub>")
+    ultimate_goal("Personal Data Hub Complete<br/><sub>Unify ChatGPT, Claude, and Gemini<br/>data in a local-first architecture<br/>that is immediately usable by<br/>user-owned AI agent systems</sub>")
 
     %% === CONNECTIONS ===
     project_start --> repo_bootstrap
