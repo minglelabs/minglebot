@@ -1,0 +1,82 @@
+flowchart TD
+    %% === PROJECT GOALS ===
+    %% Ultimate Goal: 개인 AI 에이전트가 바로 활용 가능한 로컬 퍼스트 데이터 허브 완성
+    %% Current Goal: 수집-정규화-인덱싱 파이프라인 v1 구현 기반 정리
+
+    %% === COMPLETED WORK ===
+    %% @project_start [start, closed, 2026-02-13, nam]
+    project_start("프로젝트 시작<br/><sub>개인 AI 워크플로우를 위해<br/>대화 데이터를 로컬 파일시스템에<br/>모으는 목표를 정의하고<br/>초기 작업 범위를 설정함</sub>")
+
+    %% @repo_bootstrap [ai-task, closed, 2026-02-13, nam]
+    repo_bootstrap("저장소 초기 구성<br/><sub>기본 Git 저장소와 라이선스를 만들고<br/>프로젝트의 최소 골격을 마련해<br/>문서 중심으로 방향을 정리할<br/>출발 지점을 확보함</sub>")
+
+    %% @readme_foundation [ai-task, closed, 2026-02-13, nam]
+    readme_foundation("README 기반 정리<br/><sub>미션, 원칙, 범위 경계를 명시해<br/>로컬 퍼스트와 에이전트 활용성을<br/>핵심 가치로 문서화하고<br/>초기 로드맵을 공개함</sub>")
+
+    %% @branding_iteration [ai-task, closed, 2026-02-13, nam]
+    branding_iteration("배너/메시지 다듬기<br/><sub>프로젝트 소개 톤을 반복 개선하고<br/>웜 톤 배너 자산을 반영해<br/>리포지토리 첫인상을 정리하며<br/>핵심 포지셔닝을 명확화함</sub>")
+
+    %% @architecture_v1 [ai-task, closed, 2026-02-13, nam]
+    architecture_v1("아키텍처 v1 문서화<br/><sub>어댑터 분리, 공용 파이프라인,<br/>메일 커넥터 전략과 데이터 레이아웃을<br/>정리해 구현 우선순위를<br/>실행 가능한 수준으로 고정함</sub>")
+
+    %% @vizvibe_setup [ai-task, closed, 2026-02-13, nam]
+    vizvibe_setup("VizVibe 초기 설정<br/><sub>프로젝트 궤적을 한국어로 정리한<br/>`vizvibe.mmd`를 구성해 세션 간<br/>문맥 손실을 줄이고 다음 작업의<br/>의존관계를 한눈에 보이게 함</sub>")
+
+    %% === FUTURE WORK ===
+    %% @core_orchestrator [ai-task, opened, 2026-02-13, nam]
+    core_orchestrator("오케스트레이터 구현<br/><sub>작업 상태 머신과 로컬 데이터 레이아웃을<br/>코드로 고정해 수집 이후 단계가<br/>일관된 파이프라인으로 이어지도록<br/>핵심 실행 엔진을 마련함</sub>")
+
+    %% @chatgpt_adapter [ai-task, opened, 2026-02-13, nam]
+    chatgpt_adapter("ChatGPT 어댑터 구현<br/><sub>로그인 이후 내보내기 요청부터<br/>아티팩트 확보까지 연결해<br/>v1 첫 번째 실사용 경로를<br/>종단 간으로 검증함</sub>")
+
+    %% @claude_adapter [ai-task, opened, 2026-02-13, nam]
+    claude_adapter("Claude 어댑터 구현<br/><sub>서비스별 UI/포맷 차이를 분리하고<br/>공용 파이프라인과 결합해<br/>다중 제공자 구조의 안정성을<br/>실제 코드로 확인함</sub>")
+
+    %% @mail_connector [ai-task, opened, 2026-02-13, nam]
+    mail_connector("메일 커넥터 구축<br/><sub>내보내기 링크 수신 단계를 위해<br/>API/IMAP 우선 경로와 브라우저 대체를<br/>설계해 취약한 UI 의존도를<br/>낮추는 수집 경로를 확보함</sub>")
+
+    %% @normalize_index [ai-task, opened, 2026-02-13, nam]
+    normalize_index("정규화/인덱스 구현<br/><sub>raw 산출물을 공통 스키마로 변환하고<br/>`grep` 친화 인덱스를 생성해<br/>사용자 에이전트가 바로 조회 가능한<br/>형태로 데이터를 노출함</sub>")
+
+    %% @gemini_strategy [ai-task, opened, 2026-02-13, nam]
+    gemini_strategy("Gemini 전략 확장<br/><sub>공식적으로 안정적인 수집 경로를<br/>검증한 뒤 단계적으로 통합해<br/>초기 v1 범위를 넘는 제공자 확장을<br/>안전하게 진행함</sub>")
+
+    %% @ultimate_goal [end, opened, 2026-02-13, nam]
+    ultimate_goal("개인 데이터 허브 완성<br/><sub>ChatGPT, Claude, Gemini 데이터를<br/>로컬 퍼스트 구조로 통합하고<br/>사용자 소유 AI 에이전트가 바로<br/>활용 가능한 운영 상태에 도달함</sub>")
+
+    %% === CONNECTIONS ===
+    project_start --> repo_bootstrap
+    repo_bootstrap --> readme_foundation
+    readme_foundation --> branding_iteration
+    readme_foundation --> architecture_v1
+    architecture_v1 --> vizvibe_setup
+    architecture_v1 --> core_orchestrator
+    core_orchestrator --> chatgpt_adapter --> claude_adapter --> mail_connector --> normalize_index --> gemini_strategy
+    vizvibe_setup -.-> ultimate_goal
+    chatgpt_adapter -.-> ultimate_goal
+    claude_adapter -.-> ultimate_goal
+    normalize_index -.-> ultimate_goal
+    gemini_strategy -.-> ultimate_goal
+
+    %% === RECENT WORK HIGHLIGHT ===
+    subgraph recent [RECENT]
+        vizvibe_setup
+    end
+
+    %% === STYLES ===
+    style project_start fill:#1a1a2e,stroke:#a78bfa,color:#c4b5fd,stroke-width:1px
+    style repo_bootstrap fill:#1a1a2e,stroke:#a78bfa,color:#c4b5fd,stroke-width:1px
+    style readme_foundation fill:#1a1a2e,stroke:#a78bfa,color:#c4b5fd,stroke-width:1px
+    style branding_iteration fill:#1a1a2e,stroke:#a78bfa,color:#c4b5fd,stroke-width:1px
+    style architecture_v1 fill:#1a1a2e,stroke:#a78bfa,color:#c4b5fd,stroke-width:1px
+
+    style core_orchestrator fill:#1a1a2e,stroke:#4ade80,color:#86efac,stroke-width:1px
+    style chatgpt_adapter fill:#1a1a2e,stroke:#4ade80,color:#86efac,stroke-width:1px
+    style claude_adapter fill:#1a1a2e,stroke:#4ade80,color:#86efac,stroke-width:1px
+    style mail_connector fill:#1a1a2e,stroke:#4ade80,color:#86efac,stroke-width:1px
+    style normalize_index fill:#1a1a2e,stroke:#4ade80,color:#86efac,stroke-width:1px
+    style gemini_strategy fill:#1a1a2e,stroke:#4ade80,color:#86efac,stroke-width:1px
+    style ultimate_goal fill:#1a1a2e,stroke:#4ade80,color:#86efac,stroke-width:1px
+
+    style vizvibe_setup fill:#2d1f4e,stroke:#c084fc,color:#e9d5ff,stroke-width:2px
+    style recent fill:transparent,stroke:#c084fc,color:#c084fc,stroke-width:2px,stroke-dasharray:5 5
