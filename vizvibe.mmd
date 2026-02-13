@@ -44,11 +44,66 @@ flowchart TD
     %% @agent_handoff [ai-task, opened, 2026-02-13, nam]
     agent_handoff("Agent Handoff Surface<br/><sub>Provide copy-ready `rg`/`jq`/`find`<br/>commands and clear data-root paths<br/>for immediate post-import usage</sub>")
 
-    %% @gemini_path_v1_5 [ai-task, opened, 2026-02-13, nam]
-    gemini_path_v1_5("Gemini Path (v1.5)<br/><sub>Integrate stable collection path<br/>after ChatGPT/Claude v1 pipeline is<br/>proven in production usage</sub>")
-
     %% @v1_done [milestone, opened, 2026-02-13, nam]
     v1_done("V1 Milestone Complete<br/><sub>Manual batch import works reliably<br/>for ChatGPT and Claude with dedupe,<br/>upsert, and agent-ready outputs</sub>")
+
+    %% === POST V1 PARALLEL TRACKS ===
+    %% Batch automation track
+    %% @batch_schedule_automation [ai-task, opened, 2026-02-13, nam]
+    batch_schedule_automation("Batch Automation Scheduler<br/><sub>Add scheduled import windows and<br/>guidance prompts for recurring full<br/>export import workflows</sub>")
+
+    %% @batch_download_watcher [ai-task, opened, 2026-02-13, nam]
+    batch_download_watcher("Batch Download Watcher<br/><sub>Detect new export packages in local<br/>watch folders and enqueue imports<br/>without manual file selection</sub>")
+
+    %% @batch_reconcile_reports [ai-task, opened, 2026-02-13, nam]
+    batch_reconcile_reports("Batch Reconcile Reports<br/><sub>Generate per-run reconciliation of<br/>new/updated/unchanged records for<br/>operational trust and auditability</sub>")
+
+    %% @batch_automation_done [milestone, opened, 2026-02-13, nam]
+    batch_automation_done("Batch Automation Milestone<br/><sub>Hands-off scheduled batch ingestion<br/>is stable for supported providers<br/>with transparent reconciliation</sub>")
+
+    %% Streaming automation track
+    %% @streaming_automation_core [ai-task, opened, 2026-02-13, nam]
+    streaming_automation_core("Streaming Ingest Core<br/><sub>Introduce incremental ingest engine<br/>for near-real-time updates instead<br/>of full export batch processing</sub>")
+
+    %% @chatgpt_streaming_turn [ai-task, opened, 2026-02-13, nam]
+    chatgpt_streaming_turn("ChatGPT Turn-Level Stream<br/><sub>Support per-turn or near-turn delta<br/>updates into canonical records with<br/>stable ordering and idempotency</sub>")
+
+    %% @claude_streaming_turn [ai-task, opened, 2026-02-13, nam]
+    claude_streaming_turn("Claude Turn-Level Stream<br/><sub>Implement provider-specific delta<br/>capture so single-turn changes can<br/>arrive without full export cycles</sub>")
+
+    %% @gemini_streaming_turn [ai-task, opened, 2026-02-13, nam]
+    gemini_streaming_turn("Gemini Turn-Level Stream<br/><sub>Integrate stable Gemini incremental<br/>path for turn-granularity updates as<br/>officially viable surfaces mature</sub>")
+
+    %% @streaming_conflict_guard [ai-task, opened, 2026-02-13, nam]
+    streaming_conflict_guard("Streaming Conflict Guard<br/><sub>Resolve ordering conflicts, retries,<br/>and late-arrival deltas while keeping<br/>canonical dataset deterministic</sub>")
+
+    %% @streaming_automation_done [milestone, opened, 2026-02-13, nam]
+    streaming_automation_done("Streaming Automation Milestone<br/><sub>Near-real-time ingest is reliable<br/>enough to reflect single-turn changes<br/>across supported providers</sub>")
+
+    %% Data-consumption provider track
+    %% @consumer_provider_layer [ai-task, opened, 2026-02-13, nam]
+    consumer_provider_layer("Consumption Provider Layer<br/><sub>Build explicit integrations for data<br/>consumers so each agent ecosystem<br/>can use Minglebot datasets directly</sub>")
+
+    %% @provider_claude_code [ai-task, opened, 2026-02-13, nam]
+    provider_claude_code("Claude Code Integration<br/><sub>Provider-specific command and tool<br/>surface for querying canonical and<br/>provider datasets</sub>")
+
+    %% @provider_claude_cowork [ai-task, opened, 2026-02-13, nam]
+    provider_claude_cowork("Claude Cowork Integration<br/><sub>Expose retrieval and task-context<br/>interfaces aligned with Cowork usage<br/>patterns and file conventions</sub>")
+
+    %% @provider_codex [ai-task, opened, 2026-02-13, nam]
+    provider_codex("Codex Integration<br/><sub>Provide codex-friendly adapters and<br/>query templates for structured local<br/>data exploration and handoff</sub>")
+
+    %% @provider_openclaw [ai-task, opened, 2026-02-13, nam]
+    provider_openclaw("OpenClaw Integration<br/><sub>Map Minglebot filesystem and query<br/>ops into OpenClaw tool-call surfaces<br/>for direct personal data usage</sub>")
+
+    %% @provider_mcp_generic [ai-task, opened, 2026-02-13, nam]
+    provider_mcp_generic("Generic MCP/Agent Integration<br/><sub>Publish common capability contract<br/>so additional agent providers can be<br/>added with minimal custom glue</sub>")
+
+    %% @consumer_provider_done [milestone, opened, 2026-02-13, nam]
+    consumer_provider_done("Consumer Provider Milestone<br/><sub>Major data-consumption providers are<br/>supported with explicit integration<br/>nodes and documented handoff paths</sub>")
+
+    %% @gemini_path_v1_5 [ai-task, opened, 2026-02-13, nam]
+    gemini_path_v1_5("Gemini Path (v1.5)<br/><sub>Integrate stable collection path<br/>after ChatGPT/Claude v1 pipeline is<br/>proven in production usage</sub>")
 
     %% @ultimate_goal [end, opened, 2026-02-13, nam]
     ultimate_goal("Personal Data Hub Complete<br/><sub>Unified local-first personal data<br/>platform usable by user-owned AI<br/>agent systems at daily workflow level</sub>")
@@ -56,7 +111,39 @@ flowchart TD
     %% === CONNECTIONS ===
     project_start --> readme_foundation --> architecture_v1 --> filesystem_format_v1 --> uiux_v1_spec --> batch_import_decision
     batch_import_decision --> desktop_shell --> import_intake --> chatgpt_parser_mapper --> claude_parser_mapper --> dedupe_upsert_engine --> runs_and_result_ui --> agent_handoff --> v1_done
-    v1_done --> gemini_path_v1_5 --> ultimate_goal
+
+    v1_done --> gemini_path_v1_5
+
+    %% Parallel branch A: Batch automation
+    v1_done --> batch_schedule_automation --> batch_download_watcher --> batch_reconcile_reports --> batch_automation_done
+
+    %% Parallel branch B: Streaming automation
+    v1_done --> streaming_automation_core
+    streaming_automation_core --> chatgpt_streaming_turn
+    streaming_automation_core --> claude_streaming_turn
+    streaming_automation_core --> gemini_streaming_turn
+    chatgpt_streaming_turn --> streaming_conflict_guard
+    claude_streaming_turn --> streaming_conflict_guard
+    gemini_streaming_turn --> streaming_conflict_guard
+    streaming_conflict_guard --> streaming_automation_done
+
+    %% Parallel branch C: Data-consumption provider integrations
+    v1_done --> consumer_provider_layer
+    consumer_provider_layer --> provider_claude_code
+    consumer_provider_layer --> provider_claude_cowork
+    consumer_provider_layer --> provider_codex
+    consumer_provider_layer --> provider_openclaw
+    consumer_provider_layer --> provider_mcp_generic
+    provider_claude_code --> consumer_provider_done
+    provider_claude_cowork --> consumer_provider_done
+    provider_codex --> consumer_provider_done
+    provider_openclaw --> consumer_provider_done
+    provider_mcp_generic --> consumer_provider_done
+
+    gemini_path_v1_5 --> ultimate_goal
+    batch_automation_done --> ultimate_goal
+    streaming_automation_done --> ultimate_goal
+    consumer_provider_done --> ultimate_goal
 
     %% === RECENT WORK HIGHLIGHT ===
     subgraph recent [RECENT]
@@ -66,13 +153,15 @@ flowchart TD
     end
 
     %% === STYLES ===
-    style project_start fill:#1f2937,stroke:#f59e0b,color:#fef3c7,stroke-width:1px
-    style readme_foundation fill:#1f2937,stroke:#f59e0b,color:#fef3c7,stroke-width:1px
-    style architecture_v1 fill:#1f2937,stroke:#f59e0b,color:#fef3c7,stroke-width:1px
-    style filesystem_format_v1 fill:#1f2937,stroke:#f59e0b,color:#fef3c7,stroke-width:1px
-    style uiux_v1_spec fill:#1f2937,stroke:#f59e0b,color:#fef3c7,stroke-width:1px
-    style batch_import_decision fill:#3f2a10,stroke:#fbbf24,color:#fffbeb,stroke-width:2px
+    %% Closed/completed nodes: purple
+    style project_start fill:#2d1f4e,stroke:#c084fc,color:#e9d5ff,stroke-width:1px
+    style readme_foundation fill:#2d1f4e,stroke:#c084fc,color:#e9d5ff,stroke-width:1px
+    style architecture_v1 fill:#2d1f4e,stroke:#c084fc,color:#e9d5ff,stroke-width:1px
+    style filesystem_format_v1 fill:#2d1f4e,stroke:#c084fc,color:#e9d5ff,stroke-width:1px
+    style uiux_v1_spec fill:#2d1f4e,stroke:#c084fc,color:#e9d5ff,stroke-width:1px
+    style batch_import_decision fill:#2d1f4e,stroke:#c084fc,color:#e9d5ff,stroke-width:2px
 
+    %% Open tasks: green
     style desktop_shell fill:#111827,stroke:#34d399,color:#a7f3d0,stroke-width:1px
     style import_intake fill:#111827,stroke:#34d399,color:#a7f3d0,stroke-width:1px
     style chatgpt_parser_mapper fill:#111827,stroke:#34d399,color:#a7f3d0,stroke-width:1px
@@ -81,7 +170,26 @@ flowchart TD
     style runs_and_result_ui fill:#111827,stroke:#34d399,color:#a7f3d0,stroke-width:1px
     style agent_handoff fill:#111827,stroke:#34d399,color:#a7f3d0,stroke-width:1px
     style gemini_path_v1_5 fill:#111827,stroke:#34d399,color:#a7f3d0,stroke-width:1px
+    style batch_schedule_automation fill:#111827,stroke:#34d399,color:#a7f3d0,stroke-width:1px
+    style batch_download_watcher fill:#111827,stroke:#34d399,color:#a7f3d0,stroke-width:1px
+    style batch_reconcile_reports fill:#111827,stroke:#34d399,color:#a7f3d0,stroke-width:1px
+    style streaming_automation_core fill:#111827,stroke:#34d399,color:#a7f3d0,stroke-width:1px
+    style chatgpt_streaming_turn fill:#111827,stroke:#34d399,color:#a7f3d0,stroke-width:1px
+    style claude_streaming_turn fill:#111827,stroke:#34d399,color:#a7f3d0,stroke-width:1px
+    style gemini_streaming_turn fill:#111827,stroke:#34d399,color:#a7f3d0,stroke-width:1px
+    style streaming_conflict_guard fill:#111827,stroke:#34d399,color:#a7f3d0,stroke-width:1px
+    style consumer_provider_layer fill:#111827,stroke:#34d399,color:#a7f3d0,stroke-width:1px
+    style provider_claude_code fill:#111827,stroke:#34d399,color:#a7f3d0,stroke-width:1px
+    style provider_claude_cowork fill:#111827,stroke:#34d399,color:#a7f3d0,stroke-width:1px
+    style provider_codex fill:#111827,stroke:#34d399,color:#a7f3d0,stroke-width:1px
+    style provider_openclaw fill:#111827,stroke:#34d399,color:#a7f3d0,stroke-width:1px
+    style provider_mcp_generic fill:#111827,stroke:#34d399,color:#a7f3d0,stroke-width:1px
+
+    %% Open milestones: amber
     style v1_done fill:#1f2937,stroke:#fbbf24,color:#fde68a,stroke-width:2px
+    style batch_automation_done fill:#1f2937,stroke:#fbbf24,color:#fde68a,stroke-width:2px
+    style streaming_automation_done fill:#1f2937,stroke:#fbbf24,color:#fde68a,stroke-width:2px
+    style consumer_provider_done fill:#1f2937,stroke:#fbbf24,color:#fde68a,stroke-width:2px
     style ultimate_goal fill:#1f2937,stroke:#34d399,color:#a7f3d0,stroke-width:2px
 
-    style recent fill:transparent,stroke:#f59e0b,color:#f59e0b,stroke-width:2px,stroke-dasharray:5 5
+    style recent fill:transparent,stroke:#c084fc,color:#c084fc,stroke-width:2px,stroke-dasharray:5 5
