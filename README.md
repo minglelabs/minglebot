@@ -1,6 +1,10 @@
 # Minglebot
 
 <p align="center">
+  <img src="./assets/minglebot-banner.svg" alt="Minglebot banner" width="100%">
+</p>
+
+<p align="center">
   <strong>Centralize personal data on your local filesystem, then make it usable by AI agents.</strong>
 </p>
 
