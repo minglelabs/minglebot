@@ -35,6 +35,21 @@ Initial emphasis:
 
 After this foundation, the scope expands toward broader personal data domains.
 
+## v1 Operating Mode (Manual Batch Import)
+
+Minglebot v1 intentionally uses a manual batch model:
+
+1. User exports full data from provider (ChatGPT/Claude/Gemini).
+2. User downloads export package.
+3. User imports package into Minglebot.
+4. Minglebot validates, extracts, deduplicates, and updates local dataset.
+
+Why this mode first:
+
+- More stable than brittle browser/email automation
+- Lower auth/security surface
+- Faster to ship reliable value
+
 ## Use Your Centralized Filesystem
 
 The point is not just exporting data.  
@@ -58,6 +73,7 @@ This is the initial product emphasis:
 - Any user agent should be able to explore personal data with `grep`/`find`/`jq`.
 - Data should remain readable and stable on local filesystem without proprietary lock-in.
 - `raw/` is treated as decompressed source payload (zip packages are temporary by default).
+- Repeated full exports should not create duplicate canonical records.
 
 Filesystem format spec: [`docs/filesystem-format-v1.md`](./docs/filesystem-format-v1.md)
 

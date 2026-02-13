@@ -9,6 +9,7 @@ This spec defines how Minglebot stores data on local filesystem so that:
 - users keep ownership of raw exports
 - user-owned AI agents can search data with basic shell tools (`find`, `grep`, `rg`, `jq`)
 - new providers can be added without breaking existing data
+- repeated full-export batch imports do not create duplicate canonical records
 
 ## 2. Design principles
 
@@ -109,7 +110,10 @@ Each line is one message record.
   "created_at": "2026-02-10T03:15:00Z",
   "attachment_ids": ["mb_chatgpt_att_789"],
   "source_job_id": "job_20260210_001",
-  "source_path": "raw/chatgpt/2026/02/job_20260210_001/extracted/messages.json"
+  "source_path": "raw/chatgpt/2026/02/job_20260210_001/extracted/messages.json",
+  "first_seen_job_id": "job_20260210_001",
+  "last_seen_job_id": "job_20260211_002",
+  "seen_in_jobs": ["job_20260210_001", "job_20260211_002"]
 }
 ```
 
@@ -176,6 +180,22 @@ Dedupe strategy:
 1. Primary key: `provider + provider_*_id`
 2. Fallback key: content hash + timestamp bucket
 
+Upsert behavior for repeated full exports:
+
+1. If record key already exists, update existing record (do not append duplicate).
+2. Keep immutable identifiers unchanged.
+3. Update mutable fields only when source value is newer or non-empty.
+4. Track provenance with optional fields:
+   - `first_seen_job_id`
+   - `last_seen_job_id`
+   - `seen_in_jobs` (array)
+5. Rebuild `indexes/` from deduped datasets after each successful job.
+
+Conflict policy:
+
+- Prefer provider-supplied IDs and timestamps over inferred values.
+- If timestamp is missing, keep existing canonical record and append conflict event in `errors/<job_id>.ndjson`.
+
 ## 8. Time, encoding, and text rules
 
 - All timestamps are UTC ISO-8601 (`YYYY-MM-DDTHH:mm:ss.sssZ`)
@@ -224,11 +244,12 @@ jq -r 'select(.status=="missing") | .id' "$MINGLE_DATA_ROOT/canonical/attachment
 
 Allowed status values:
 
-- `WAITING_FOR_LOGIN`
-- `LOGIN_CONFIRMED`
-- `EXPORT_REQUESTED`
-- `MAIL_READY`
-- `ARTIFACT_DOWNLOADED`
+- `PACKAGE_SELECTED`
+- `PACKAGE_VALIDATED`
+- `EXTRACTED_TO_RAW`
+- `PARSED_PROVIDER_RECORDS`
+- `MAPPED_CANONICAL_RECORDS`
+- `DEDUPED_UPSERTED`
 - `NORMALIZED`
 - `FAILED`
 

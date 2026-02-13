@@ -8,6 +8,7 @@ Minglebot v1 focuses on one thing:
 
 - Centralize user chat data from ChatGPT/Claude/Gemini into a local filesystem
 - Make that data easy for user-owned AI agents to explore with basic shell tools (`grep`, `find`, `jq`)
+- Use manual batch import as default operation model (stable dedupe for repeated full exports)
 
 ## 1. Should Minglebot be a desktop app?
 
@@ -17,12 +18,12 @@ Why:
 
 - Local filesystem is the source of truth
 - Users can manually perform sensitive login/authorization
-- Browser automation can run with clear user visibility
+- Users can run provider exports manually with clear in-app guidance
 
 Recommended shape:
 
 - Desktop shell (UI): Electron or Tauri
-- Local core service: orchestrates jobs, browser-use, parsing, mapping, persistence
+- Local core service: orchestrates import jobs, parsing, mapping, dedupe, persistence
 - Local data store: files + metadata index
 
 About OpenClaw:
@@ -46,34 +47,28 @@ Use this split:
 - `Provider Adapter` (service-specific)
 - `Shared Pipeline` (service-agnostic core for non-semantic processing)
 
-## 3. Are these 4 browser-use steps needed?
+## 3. v1 import flow (manual batch mode)
 
-Your 4 steps are directionally correct, with one adjustment.
+v1 defaults to manual batch import, not full browser/email automation.
 
-Proposed flow:
+Flow:
 
-1. Open provider login page and wait for user login.
-2. Detect authenticated state, then navigate to export trigger and request export.
-3. Handle email retrieval path.
-4. Download export artifact and hand off to ingest pipeline.
-
-Important adjustment:
-
-- Step 3/4 should not be browser-only by default.
-- Prefer API/IMAP connectors for mailbox retrieval when available.
-- Keep browser mailbox flow as fallback.
+1. User exports data from provider manually.
+2. User downloads export package manually.
+3. User imports package into Minglebot.
+4. Minglebot validates, extracts, parses, deduplicates, and updates local dataset.
 
 Why:
 
-- Mail web UI automation is brittle.
-- API/IMAP is more stable and easier to test.
+- Better reliability in early stage
+- Lower auth and maintenance risk
 
 ## 4. Package structure: service-first or function-first?
 
 Use hybrid architecture:
 
 - Edge layer: service-first (provider adapters)
-- Core layer: function-first (download, unzip, validate, persist, index)
+- Core layer: function-first (import, unzip, validate, dedupe, persist, index)
 
 Suggested structure:
 
@@ -81,11 +76,12 @@ Suggested structure:
 src/
   app/
     desktop/                # Electron/Tauri entry, windows, IPC
+    import-ui/              # provider guides + package upload
   core/
     orchestrator/           # job state machine
-    auth-wait/              # login/session detection helpers
-    inbox/                  # email fetch abstraction (imap/api/browser fallback)
-    artifacts/              # download, checksum, unzip
+    import/                 # package intake + verification
+    artifacts/              # checksum + unzip + temp handling
+    dedupe/                 # upsert and conflict resolution
     canonical/              # canonical schema writer
     storage/                # local layout + manifests + indexes
   providers/
@@ -112,7 +108,7 @@ This gives:
 - Fast provider onboarding (new folder in `providers/`)
 - Stable shared core for every provider
 
-## 5. Who owns post-download processing?
+## 5. Who owns post-import processing?
 
 One orchestrated pipeline should own the lifecycle, with provider-specific parsing stages.
 
@@ -123,7 +119,7 @@ Pipeline:
 3. Extract/decompress into `raw/.../extracted/`
 4. Provider parser -> provider records
 5. Provider mapper -> minimal canonical schema
-6. Write final datasets (`provider/`, `canonical/`)
+6. Dedupe/upsert into final datasets (`provider/`, `canonical/`)
 7. Build search-friendly indexes/manifests (`indexes/`)
 
 Default retention policy:
@@ -182,30 +178,26 @@ Conventions:
 - deterministic filenames
 - stable IDs for conversations/messages
 
-## 8. Login detection strategy
+## 8. Import job state machine
 
-Use deterministic checks instead of timing assumptions:
+Use deterministic import states:
 
-- cookie/session presence
-- URL pattern + authenticated-only selector
-- explicit timeout + user prompt
-
-State machine:
-
-- `WAITING_FOR_LOGIN`
-- `LOGIN_CONFIRMED`
-- `EXPORT_REQUESTED`
-- `MAIL_READY`
-- `ARTIFACT_DOWNLOADED`
+- `PACKAGE_SELECTED`
+- `PACKAGE_VALIDATED`
+- `EXTRACTED_TO_RAW`
+- `PARSED_PROVIDER_RECORDS`
+- `MAPPED_CANONICAL_RECORDS`
+- `DEDUPED_UPSERTED`
 - `NORMALIZED`
+- `FAILED`
 
 ## 9. v1 milestone plan
 
 1. Core orchestrator + local data layout
-2. ChatGPT adapter end-to-end
-3. Claude adapter end-to-end
-4. Mail inbox connector (API/IMAP first, browser fallback)
-5. Raw extracted storage + provider mapping + canonical writing + grep-friendly indexing
+2. Manual import UI (provider guides + package upload)
+3. ChatGPT adapter end-to-end
+4. Claude adapter end-to-end
+5. Raw extracted storage + provider mapping + canonical dedupe/upsert + indexing
 6. Gemini strategy implementation (based on officially stable path)
 
 ## 10. Images and attachments policy
