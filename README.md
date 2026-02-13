@@ -28,6 +28,11 @@ Phase 1 is clear and concrete:
 - Normalize and organize it into one local filesystem location
 - Make it directly usable by personal agent systems
 
+Initial emphasis:
+
+- Ensure personal data is explorable by user-owned AI agents through basic bash primitives (`grep`, `find`, etc.).
+- Keep storage layout and file formats simple enough for fast terminal-level retrieval and chaining.
+
 After this foundation, the scope expands toward broader personal data domains.
 
 ## Why This Matters
