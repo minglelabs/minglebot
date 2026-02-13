@@ -1,7 +1,7 @@
 # Minglebot
 
 <p align="center">
-  <img src="./assets/minglebot-banner.svg" alt="Minglebot banner" width="100%">
+  <img src="./assets/minglebot-banner-warm.svg" alt="Minglebot banner" width="100%">
 </p>
 
 <p align="center">
@@ -94,6 +94,8 @@ flowchart LR
 
 Early-stage repository.  
 Current focus is mission definition and architecture setup for implementation.
+
+Architecture draft: [`docs/architecture-v1.md`](./docs/architecture-v1.md)
 
 ## Contributing
 
