@@ -1,0 +1,30 @@
+[
+  {
+    "id": "conv_1",
+    "title": "Test Conversation",
+    "create_time": 1739420000,
+    "update_time": 1739420300,
+    "mapping": {
+      "m1": {
+        "id": "m1",
+        "message": {
+          "id": "msg_user_1",
+          "author": { "role": "user" },
+          "create_time": 1739420010,
+          "content": { "parts": ["hello"] },
+          "metadata": {}
+        }
+      },
+      "m2": {
+        "id": "m2",
+        "message": {
+          "id": "msg_assistant_1",
+          "author": { "role": "assistant" },
+          "create_time": 1739420020,
+          "content": { "parts": ["hi there"] },
+          "metadata": {}
+        }
+      }
+    }
+  }
+]

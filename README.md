@@ -87,6 +87,20 @@ Data root default:
 
 - `./data` (override with `MINGLE_DATA_ROOT`)
 
+## v1 Milestone Status
+
+- [x] Local desktop-style app shell (`Home`, `Import`, `Runs`, `Data`-oriented flow)
+- [x] Manual package intake and validation (`.zip/.json/.ndjson/.txt`)
+- [x] ChatGPT parser/mapper
+- [x] Claude parser/mapper
+- [x] Canonical dedupe/upsert engine for repeated full exports
+- [x] Run history and import result counters (`new/updated/unchanged/failed`)
+- [x] Agent handoff snippets (`rg` / `jq` / `find`)
+
+Current limitation:
+
+- Gemini ingestion path remains partial in v1 and is tracked for v1.5.
+
 ## Use Your Centralized Filesystem
 
 The point is not just exporting data.  

@@ -23,28 +23,28 @@ flowchart TD
     batch_import_decision("v1 Batch Import Decision<br/><sub>Locked v1 to user-driven package<br/>imports and removed mandatory email<br/>automation dependency from scope</sub>")
 
     %% === V1 BUILD TRACK ===
-    %% @desktop_shell [ai-task, opened, 2026-02-13, nam]
+    %% @desktop_shell [ai-task, closed, 2026-02-13, nam]
     desktop_shell("Desktop Shell<br/><sub>Implement local app shell and core<br/>navigation: Home, Import, Runs,<br/>Data, Settings</sub>")
 
-    %% @import_intake [ai-task, opened, 2026-02-13, nam]
+    %% @import_intake [ai-task, closed, 2026-02-13, nam]
     import_intake("Import Intake Engine<br/><sub>Handle package selection, format<br/>validation, extraction to raw, and<br/>job metadata recording</sub>")
 
-    %% @chatgpt_parser_mapper [ai-task, opened, 2026-02-13, nam]
+    %% @chatgpt_parser_mapper [ai-task, closed, 2026-02-13, nam]
     chatgpt_parser_mapper("ChatGPT Parser/Mapper<br/><sub>Convert provider export into<br/>provider + canonical datasets with<br/>stable IDs and provenance fields</sub>")
 
-    %% @claude_parser_mapper [ai-task, opened, 2026-02-13, nam]
+    %% @claude_parser_mapper [ai-task, closed, 2026-02-13, nam]
     claude_parser_mapper("Claude Parser/Mapper<br/><sub>Implement provider-specific parse<br/>logic and canonical mapping with<br/>dedupe-safe upsert behavior</sub>")
 
-    %% @dedupe_upsert_engine [ai-task, opened, 2026-02-13, nam]
+    %% @dedupe_upsert_engine [ai-task, closed, 2026-02-13, nam]
     dedupe_upsert_engine("Dedupe/Upsert Engine<br/><sub>Ensure repeated full exports update<br/>existing canonical records without<br/>uncontrolled duplication</sub>")
 
-    %% @runs_and_result_ui [ai-task, opened, 2026-02-13, nam]
+    %% @runs_and_result_ui [ai-task, closed, 2026-02-13, nam]
     runs_and_result_ui("Runs and Result UX<br/><sub>Expose run history, status stages,<br/>and change counters: new/updated/<br/>unchanged/failed</sub>")
 
-    %% @agent_handoff [ai-task, opened, 2026-02-13, nam]
+    %% @agent_handoff [ai-task, closed, 2026-02-13, nam]
     agent_handoff("Agent Handoff Surface<br/><sub>Provide copy-ready `rg`/`jq`/`find`<br/>commands and clear data-root paths<br/>for immediate post-import usage</sub>")
 
-    %% @v1_done [milestone, opened, 2026-02-13, nam]
+    %% @v1_done [milestone, closed, 2026-02-13, nam]
     v1_done("V1 Milestone Complete<br/><sub>Manual batch import works reliably<br/>for ChatGPT and Claude with dedupe,<br/>upsert, and agent-ready outputs</sub>")
 
     %% === POST V1 PARALLEL TRACKS ===
@@ -161,14 +161,16 @@ flowchart TD
     style uiux_v1_spec fill:#2d1f4e,stroke:#c084fc,color:#e9d5ff,stroke-width:1px
     style batch_import_decision fill:#2d1f4e,stroke:#c084fc,color:#e9d5ff,stroke-width:2px
 
+    %% Closed v1 build tasks: purple
+    style desktop_shell fill:#2d1f4e,stroke:#c084fc,color:#e9d5ff,stroke-width:1px
+    style import_intake fill:#2d1f4e,stroke:#c084fc,color:#e9d5ff,stroke-width:1px
+    style chatgpt_parser_mapper fill:#2d1f4e,stroke:#c084fc,color:#e9d5ff,stroke-width:1px
+    style claude_parser_mapper fill:#2d1f4e,stroke:#c084fc,color:#e9d5ff,stroke-width:1px
+    style dedupe_upsert_engine fill:#2d1f4e,stroke:#c084fc,color:#e9d5ff,stroke-width:1px
+    style runs_and_result_ui fill:#2d1f4e,stroke:#c084fc,color:#e9d5ff,stroke-width:1px
+    style agent_handoff fill:#2d1f4e,stroke:#c084fc,color:#e9d5ff,stroke-width:1px
+
     %% Open tasks: green
-    style desktop_shell fill:#111827,stroke:#34d399,color:#a7f3d0,stroke-width:1px
-    style import_intake fill:#111827,stroke:#34d399,color:#a7f3d0,stroke-width:1px
-    style chatgpt_parser_mapper fill:#111827,stroke:#34d399,color:#a7f3d0,stroke-width:1px
-    style claude_parser_mapper fill:#111827,stroke:#34d399,color:#a7f3d0,stroke-width:1px
-    style dedupe_upsert_engine fill:#111827,stroke:#34d399,color:#a7f3d0,stroke-width:1px
-    style runs_and_result_ui fill:#111827,stroke:#34d399,color:#a7f3d0,stroke-width:1px
-    style agent_handoff fill:#111827,stroke:#34d399,color:#a7f3d0,stroke-width:1px
     style gemini_path_v1_5 fill:#111827,stroke:#34d399,color:#a7f3d0,stroke-width:1px
     style batch_schedule_automation fill:#111827,stroke:#34d399,color:#a7f3d0,stroke-width:1px
     style batch_download_watcher fill:#111827,stroke:#34d399,color:#a7f3d0,stroke-width:1px
@@ -185,8 +187,8 @@ flowchart TD
     style provider_openclaw fill:#111827,stroke:#34d399,color:#a7f3d0,stroke-width:1px
     style provider_mcp_generic fill:#111827,stroke:#34d399,color:#a7f3d0,stroke-width:1px
 
-    %% Open milestones: amber
-    style v1_done fill:#1f2937,stroke:#fbbf24,color:#fde68a,stroke-width:2px
+    %% Milestones
+    style v1_done fill:#2d1f4e,stroke:#c084fc,color:#e9d5ff,stroke-width:2px
     style batch_automation_done fill:#1f2937,stroke:#fbbf24,color:#fde68a,stroke-width:2px
     style streaming_automation_done fill:#1f2937,stroke:#fbbf24,color:#fde68a,stroke-width:2px
     style consumer_provider_done fill:#1f2937,stroke:#fbbf24,color:#fde68a,stroke-width:2px
