@@ -112,9 +112,9 @@ This keeps the system realistic, safer, and easier to maintain.
 
 ```mermaid
 flowchart LR
-    A["User Performs Login/Auth"] --> B["Minglebot Browser Automation"]
-    B --> C["Collect Chat Data (ChatGPT / Claude / Gemini)"]
-    C --> D["Normalize + Store in Local Filesystem Hub"]
+    A["User Exports Data (Provider UI)"] --> B["User Downloads Export Package"]
+    B --> C["User Imports Package into Minglebot"]
+    C --> D["Validate + Extract + Dedupe + Upsert"]
     D --> E["Expose Agent-Friendly Tool Calls"]
     E --> F["Use via Claude Code / Codex / OpenClaw / etc."]
 ```
@@ -128,9 +128,10 @@ flowchart LR
 ## Roadmap
 
 1. Reliable ingestion pipeline for ChatGPT/Claude/Gemini chat data
-2. Provider-specific parsing + minimal canonical schema mapping
+2. Provider-specific parsing + canonical dedupe/upsert mapping
 3. Tool-calling surface for personal agent systems
-4. Expansion beyond chat into broader personal data
+4. Import-first desktop UX for non-developers
+5. Expansion beyond chat into broader personal data
 
 ## Status
 
@@ -139,6 +140,7 @@ Current focus is mission definition and architecture setup for implementation.
 
 Architecture draft: [`docs/architecture-v1.md`](./docs/architecture-v1.md)
 Data format draft: [`docs/filesystem-format-v1.md`](./docs/filesystem-format-v1.md)
+UI/UX draft: [`docs/ui-ux-v1.md`](./docs/ui-ux-v1.md)
 
 ## Contributing
 
