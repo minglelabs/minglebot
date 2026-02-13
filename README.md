@@ -66,6 +66,27 @@ v1 explicitly excludes:
 - mandatory browser/email automation for export retrieval
 - cloud dependency for core ingest and storage
 
+## Quick Start (Local)
+
+```bash
+npm install
+npm run build
+npm run dev
+```
+
+Then open `http://localhost:4242`.
+
+What you can do now:
+
+1. Open provider export guide links (ChatGPT/Claude/Gemini).
+2. Upload export package (`.zip/.json/.ndjson/.txt`).
+3. Run import with dedupe/upsert.
+4. See run history and copy agent-ready shell commands.
+
+Data root default:
+
+- `./data` (override with `MINGLE_DATA_ROOT`)
+
 ## Use Your Centralized Filesystem
 
 The point is not just exporting data.  
