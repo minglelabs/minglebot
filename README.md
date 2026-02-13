@@ -57,6 +57,7 @@ This is the initial product emphasis:
 
 - Any user agent should be able to explore personal data with `grep`/`find`/`jq`.
 - Data should remain readable and stable on local filesystem without proprietary lock-in.
+- `raw/` is treated as decompressed source payload (zip packages are temporary by default).
 
 Filesystem format spec: [`docs/filesystem-format-v1.md`](./docs/filesystem-format-v1.md)
 

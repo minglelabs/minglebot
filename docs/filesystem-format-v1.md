@@ -14,7 +14,7 @@ This spec defines how Minglebot stores data on local filesystem so that:
 
 1. Local-first and text-first
 2. Provider-specific parsing, minimal canonical normalization
-3. Raw artifacts are immutable; derived indexes are rebuildable
+3. Raw extracted payloads are immutable; derived indexes are rebuildable
 4. Deterministic IDs and stable paths
 
 ## 3. Directory layout contract
@@ -26,7 +26,7 @@ This spec defines how Minglebot stores data on local filesystem so that:
     catalog.json
   raw/
     <provider>/<yyyy>/<mm>/<job_id>/
-      export-artifact.*           # zip/html/json/etc
+      extracted/                  # decompressed provider payload
       source-metadata.json
   provider/
     <provider>/
@@ -50,10 +50,11 @@ This spec defines how Minglebot stores data on local filesystem so that:
 
 Notes:
 
-- `raw/` keeps original export payloads and should never be overwritten.
+- `raw/` keeps decompressed provider payloads and should never be overwritten.
 - `provider/` preserves provider-specific fields and structures.
 - `canonical/` keeps only minimum common schema for cross-provider usage.
 - `indexes/` are derived and can be regenerated from `canonical/`.
+- downloaded archives (zip/html export package) are temporary by default and not required in managed dataset.
 
 ## 4. Schema version file
 
@@ -82,7 +83,7 @@ Each line is one conversation record.
   "created_at": "2026-02-10T03:04:05Z",
   "updated_at": "2026-02-10T04:05:06Z",
   "source_job_id": "job_20260210_001",
-  "source_path": "raw/chatgpt/2026/02/job_20260210_001/export.zip"
+  "source_path": "raw/chatgpt/2026/02/job_20260210_001/extracted/conversations.json"
 }
 ```
 
@@ -108,7 +109,7 @@ Each line is one message record.
   "created_at": "2026-02-10T03:15:00Z",
   "attachment_ids": ["mb_chatgpt_att_789"],
   "source_job_id": "job_20260210_001",
-  "source_path": "raw/chatgpt/2026/02/job_20260210_001/export.zip"
+  "source_path": "raw/chatgpt/2026/02/job_20260210_001/extracted/messages.json"
 }
 ```
 
@@ -211,7 +212,8 @@ jq -r 'select(.status=="missing") | .id' "$MINGLE_DATA_ROOT/canonical/attachment
   "status": "NORMALIZED",
   "started_at": "2026-02-10T03:00:00Z",
   "ended_at": "2026-02-10T03:08:00Z",
-  "artifact_path": "raw/chatgpt/2026/02/job_20260210_001/export.zip",
+  "raw_root_path": "raw/chatgpt/2026/02/job_20260210_001/extracted",
+  "download_artifact_retained": false,
   "canonical_records": {
     "conversations": 18,
     "messages": 1532,
@@ -230,7 +232,19 @@ Allowed status values:
 - `NORMALIZED`
 - `FAILED`
 
-## 11. Compatibility policy
+## 11. Download artifact retention policy
+
+Default policy:
+
+- Download package is kept in temp workspace only for verification/extraction.
+- After successful extraction into `raw/.../extracted/`, package is deleted.
+
+Optional policy:
+
+- A provider/job level setting may retain package for debugging or forensics.
+- If retained, the retained path must be written to `jobs/<job_id>.json`.
+
+## 12. Compatibility policy
 
 v1 compatibility promise:
 

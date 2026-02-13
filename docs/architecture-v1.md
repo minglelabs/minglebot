@@ -119,12 +119,17 @@ One orchestrated pipeline should own the lifecycle, with provider-specific parsi
 Pipeline:
 
 1. Acquire artifact (zip/html/json/link export)
-2. Verify + archive raw artifact (`raw/`)
-3. Extract/decompress
+2. Verify artifact in temp workspace
+3. Extract/decompress into `raw/.../extracted/`
 4. Provider parser -> provider records
 5. Provider mapper -> minimal canonical schema
 6. Write final datasets (`provider/`, `canonical/`)
 7. Build search-friendly indexes/manifests (`indexes/`)
+
+Default retention policy:
+
+- Download packages are deleted after successful extraction.
+- Managed local dataset keeps decompressed raw payloads, not package files.
 
 Recommendation:
 
@@ -158,7 +163,7 @@ Design principle: "human-readable first, grep-able always"
 ```text
 data/
   raw/
-    <provider>/<yyyy-mm-dd>/<artifact files>
+    <provider>/<yyyy-mm-dd>/extracted/<provider files>
   provider/
     <provider>/*.ndjson
   canonical/
@@ -200,7 +205,7 @@ State machine:
 2. ChatGPT adapter end-to-end
 3. Claude adapter end-to-end
 4. Mail inbox connector (API/IMAP first, browser fallback)
-5. Provider mapping + canonical writing + grep-friendly indexing
+5. Raw extracted storage + provider mapping + canonical writing + grep-friendly indexing
 6. Gemini strategy implementation (based on officially stable path)
 
 ## 10. Images and attachments policy
