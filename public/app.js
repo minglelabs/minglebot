@@ -149,6 +149,10 @@ function renderUpload() {
         <span id="drop-title" class="drop-title">Drop ZIP Here</span>
         <span id="drop-file" class="drop-file">or click to choose file</span>
       </button>
+      <div class="file-actions">
+        <button id="replace-file" class="btn-ghost" type="button">Choose Another</button>
+        <button id="clear-file" class="btn-ghost" type="button" disabled>Clear</button>
+      </div>
       <div class="controls">
         <button class="btn-primary" type="submit">Run Import</button>
       </div>
@@ -161,7 +165,20 @@ function renderUpload() {
   const dropIconEl = form.querySelector("#drop-icon");
   const dropTitleEl = form.querySelector("#drop-title");
   const dropFileEl = form.querySelector("#drop-file");
+  const replaceFileEl = form.querySelector("#replace-file");
+  const clearFileEl = form.querySelector("#clear-file");
   let selectedFile = null;
+
+  function resetSelectedFile() {
+    selectedFile = null;
+    dropZone.classList.remove("has-file", "dragover");
+    dropTitleEl.hidden = false;
+    dropIconEl.hidden = true;
+    dropFileEl.textContent = "or click to choose file";
+    fileInput.value = "";
+    clearFileEl.disabled = true;
+    setFeedback("", "");
+  }
 
   function setSelectedFile(file) {
     selectedFile = file;
@@ -169,6 +186,7 @@ function renderUpload() {
     dropTitleEl.hidden = true;
     dropIconEl.hidden = false;
     dropFileEl.textContent = file.name;
+    clearFileEl.disabled = false;
     setFeedback("", "");
     try {
       const dt = new DataTransfer();
@@ -179,7 +197,14 @@ function renderUpload() {
     }
   }
 
-  dropZone.addEventListener("click", () => fileInput.click());
+  function openFilePicker() {
+    fileInput.value = "";
+    fileInput.click();
+  }
+
+  dropZone.addEventListener("click", openFilePicker);
+  replaceFileEl.addEventListener("click", openFilePicker);
+  clearFileEl.addEventListener("click", resetSelectedFile);
   fileInput.addEventListener("change", () => {
     const file = fileInput.files && fileInput.files[0];
     if (file) setSelectedFile(file);
