@@ -290,9 +290,23 @@ find "${state.dataRoot}/canonical" -type f`;
       <article class="metric"><div class="k">Failed</div><div class="v">${m.failed}</div></article>
     </div>
     <div class="controls">
+      <button class="btn-primary" data-action="open-folder">Open in Finder</button>
       <button class="btn-ghost" data-action="copy">Copy Commands</button>
     </div>
   `;
+
+  bodyEl.querySelector('[data-action="open-folder"]').addEventListener("click", async () => {
+    try {
+      await fetchJson("/api/open-import-folder", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ jobId: result.jobId })
+      });
+      setFeedback("Finder opened.", "ok");
+    } catch (error) {
+      setFeedback(`Could not open folder: ${error.message}`, "err");
+    }
+  });
 
   bodyEl.querySelector('[data-action="copy"]').addEventListener("click", async () => {
     try {

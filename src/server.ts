@@ -2,6 +2,8 @@ import express from "express";
 import multer from "multer";
 import path from "node:path";
 import { promises as fs } from "node:fs";
+import { execFile } from "node:child_process";
+import { promisify } from "node:util";
 import { resolveLayout, ensureLayout } from "./core/layout";
 import { readJsonFile } from "./lib/fsx";
 import { runImport } from "./core/import-run";
@@ -10,6 +12,7 @@ import { Provider, RunRecord } from "./types/schema";
 const app = express();
 const port = Number(process.env.PORT || 4242);
 const layout = resolveLayout(process.env.MINGLE_DATA_ROOT);
+const execFileAsync = promisify(execFile);
 
 const uploadRoot = path.join(layout.root, ".uploads");
 const upload = multer({ dest: uploadRoot });
@@ -45,6 +48,16 @@ function parseBoolean(value: unknown): boolean {
   if (typeof value === "boolean") return value;
   if (typeof value === "string") return ["1", "true", "yes", "on"].includes(value.toLowerCase());
   return false;
+}
+
+function isPathInsideRoot(absRoot: string, absTarget: string): boolean {
+  return absTarget === absRoot || absTarget.startsWith(`${absRoot}${path.sep}`);
+}
+
+async function openInFileManager(targetPath: string): Promise<void> {
+  const command =
+    process.platform === "darwin" ? "open" : process.platform === "win32" ? "explorer" : "xdg-open";
+  await execFileAsync(command, [targetPath]);
 }
 
 async function readRuns(): Promise<RunRecord[]> {
@@ -95,6 +108,42 @@ app.get("/api/runs/:jobId", async (req, res) => {
     return;
   }
   res.json(run);
+});
+
+app.post("/api/open-import-folder", async (req, res) => {
+  try {
+    const jobId = String(req.body?.jobId || "").trim();
+    if (!jobId) {
+      res.status(400).json({ error: "Missing jobId" });
+      return;
+    }
+
+    const run = await readJsonFile<RunRecord | null>(path.join(layout.jobsRoot, `${jobId}.json`), null);
+    if (!run || !run.raw_root_path) {
+      res.status(404).json({ error: "Run path not found for this job." });
+      return;
+    }
+
+    const absRoot = path.resolve(layout.root);
+    const absTarget = path.resolve(layout.root, run.raw_root_path);
+    if (!isPathInsideRoot(absRoot, absTarget)) {
+      res.status(400).json({ error: "Resolved path is outside data root." });
+      return;
+    }
+
+    const stat = await fs.stat(absTarget).catch(() => null);
+    if (!stat || !stat.isDirectory()) {
+      res.status(404).json({ error: "Import folder does not exist." });
+      return;
+    }
+
+    await openInFileManager(absTarget);
+    res.json({ ok: true, path: absTarget });
+  } catch (error) {
+    res.status(500).json({
+      error: error instanceof Error ? error.message : String(error)
+    });
+  }
 });
 
 app.post("/api/import", upload.single("package"), async (req, res) => {
