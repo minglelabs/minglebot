@@ -5,7 +5,7 @@ const bodyEl = document.getElementById("step-body");
 const feedbackEl = document.getElementById("feedback");
 
 const state = {
-  step: "welcome",
+  step: "provider",
   providers: {},
   selectedProvider: null,
   dataRoot: "-",
@@ -50,26 +50,10 @@ function goto(step) {
   render();
 }
 
-function renderWelcome() {
-  chipEl.textContent = "Step 1";
-  titleEl.textContent = "Bring one export package";
-  descriptionEl.textContent = "Only one action now: start the import flow.";
-  bodyEl.innerHTML = `
-    <div class="meta-row">
-      <span class="meta-pill">Data Root: ${state.dataRoot}</span>
-      <span class="meta-pill">Last Run: ${formatDate(state.lastRun?.started_at)}</span>
-    </div>
-    <div class="controls">
-      <button class="btn-primary" data-action="start">Start</button>
-    </div>
-  `;
-  bodyEl.querySelector('[data-action="start"]').addEventListener("click", () => goto("provider"));
-}
-
 function renderProvider() {
-  chipEl.textContent = "Step 2";
-  titleEl.textContent = "Choose provider";
-  descriptionEl.textContent = "Pick where your export package came from.";
+  chipEl.textContent = "Step 1";
+  titleEl.textContent = "Choose data source";
+  descriptionEl.textContent = "ChatGPT, GEMINI, CLAUDE";
 
   const cards = Object.entries(state.providers)
     .map(
@@ -84,9 +68,6 @@ function renderProvider() {
 
   bodyEl.innerHTML = `
     <div class="provider-grid">${cards}</div>
-    <div class="controls">
-      <button class="btn-ghost" data-action="back">Back</button>
-    </div>
   `;
 
   bodyEl.querySelectorAll("[data-provider]").forEach((node) => {
@@ -95,13 +76,11 @@ function renderProvider() {
       goto("guide");
     });
   });
-
-  bodyEl.querySelector('[data-action="back"]').addEventListener("click", () => goto("welcome"));
 }
 
 function renderGuide() {
   const provider = state.providers[state.selectedProvider];
-  chipEl.textContent = "Step 3";
+  chipEl.textContent = "Step 2";
   titleEl.textContent = `${provider.label} export`;
   descriptionEl.textContent = "Open the export page, download your package, then continue.";
 
@@ -122,7 +101,7 @@ function renderGuide() {
 
 function renderUpload() {
   const provider = state.providers[state.selectedProvider];
-  chipEl.textContent = "Step 4";
+  chipEl.textContent = "Step 3";
   titleEl.textContent = "Upload package";
   descriptionEl.textContent = `${provider.label} package only. Then run import.`;
 
@@ -181,7 +160,7 @@ function renderUpload() {
 }
 
 function renderRunning() {
-  chipEl.textContent = "Step 5";
+  chipEl.textContent = "Step 4";
   titleEl.textContent = "Processing";
   descriptionEl.textContent = "Validating, extracting, deduping, and writing canonical data.";
   bodyEl.innerHTML = `
@@ -241,9 +220,6 @@ find "${state.dataRoot}/canonical" -type f</pre>
 
 function render() {
   switch (state.step) {
-    case "welcome":
-      renderWelcome();
-      break;
     case "provider":
       renderProvider();
       break;
@@ -260,7 +236,7 @@ function render() {
       renderResult();
       break;
     default:
-      renderWelcome();
+      renderProvider();
       break;
   }
 }
