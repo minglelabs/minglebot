@@ -38,6 +38,22 @@ function messageRole(msg: Record<string, unknown>): string {
   return String(role || "unknown");
 }
 
+function messageModel(msg: Record<string, unknown>): string | undefined {
+  const direct =
+    msg.model ||
+    msg.model_name ||
+    msg.modelName ||
+    getObject(msg.metadata)?.model ||
+    getObject(msg.meta)?.model ||
+    getObject(msg.author)?.model;
+
+  if (typeof direct === "string" && direct.trim()) {
+    return direct.trim();
+  }
+
+  return undefined;
+}
+
 function messageText(msg: Record<string, unknown>): string {
   const content = msg.content;
   if (Array.isArray(content)) {
@@ -243,6 +259,7 @@ function upsertMessageAndAttachments(
 ): void {
   const providerMessageId = String(msg.id || msg.uuid || msg.message_id || "").trim();
   const role = messageRole(msg);
+  const model = messageModel(msg);
   const text = messageText(msg);
   const createdAt = toIsoOrUndefined(msg.created_at || msg.createdAt || msg.timestamp);
 
@@ -263,6 +280,7 @@ function upsertMessageAndAttachments(
     conversation_id: conversationId,
     provider: "claude",
     provider_message_id: providerMessageId || undefined,
+    model,
     role,
     text,
     created_at: createdAt,
@@ -278,6 +296,7 @@ function upsertMessageAndAttachments(
     messages.set(messageId, {
       ...existingMessage,
       text: nextMessage.text.length >= existingMessage.text.length ? nextMessage.text : existingMessage.text,
+      model: nextMessage.model || existingMessage.model,
       role: nextMessage.role || existingMessage.role,
       created_at: nextMessage.created_at || existingMessage.created_at,
       source_path: existingMessage.source_path || nextMessage.source_path,

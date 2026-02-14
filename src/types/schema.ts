@@ -25,6 +25,7 @@ export interface CanonicalMessage extends ProvenanceFields {
   conversation_id: string;
   provider: Provider;
   provider_message_id?: string;
+  model?: string;
   role: string;
   text: string;
   created_at?: string;

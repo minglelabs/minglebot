@@ -66,6 +66,7 @@ function mergeMessage(prev: CanonicalMessage, next: CanonicalMessage): Canonical
     source_job_id: next.source_job_id,
     source_path: next.source_path || prev.source_path,
     provider_message_id: mergeOptional(prev.provider_message_id, next.provider_message_id),
+    model: mergeOptional(prev.model, next.model),
     role: next.role || prev.role,
     text: mergeText(prev.text, next.text) || "",
     created_at: isIsoDateNewer(prev.created_at, next.created_at) ? prev.created_at : next.created_at || prev.created_at,

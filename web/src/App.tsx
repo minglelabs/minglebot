@@ -57,6 +57,7 @@ interface ClaudeConversationSummary {
 interface ClaudeMessageItem {
   id: string;
   conversation_id: string;
+  model?: string;
   role: string;
   text: string;
   created_at?: string;
@@ -144,7 +145,7 @@ function formatDateTime(iso?: string): string {
 function roleLabel(role: string): string {
   const lower = role.toLowerCase();
   if (lower === "human" || lower === "user") return "You";
-  if (lower === "assistant") return "Assistant";
+  if (lower === "assistant") return "Claude";
   return role;
 }
 
@@ -670,6 +671,9 @@ find "${dataRoot}/canonical" -type f`;
                   claudeMessages.map((message) => {
                     const isAssistant = message.role.toLowerCase() === "assistant";
                     const cleaned = cleanViewerText(message.text || "");
+                    const roleText = isAssistant
+                      ? `Claude${message.model ? ` • ${message.model}` : ""}`
+                      : roleLabel(message.role);
                     return (
                       <article key={message.id} className={`flex ${isAssistant ? "justify-start" : "justify-end"}`}>
                         <div
@@ -680,7 +684,7 @@ find "${dataRoot}/canonical" -type f`;
                           }`}
                         >
                           <div className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-[#bfaa8a]">
-                            {roleLabel(message.role)}
+                            {roleText}
                           </div>
                           <div className="whitespace-pre-wrap text-[15px] leading-[1.65]">
                             {cleaned || "(empty message)"}
