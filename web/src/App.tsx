@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 
-type Step = "provider" | "guide" | "upload" | "running" | "result";
+type Step = "provider" | "guide" | "upload" | "running" | "result" | "viewer";
 type Tone = "" | "ok" | "err";
 type ProviderKey = "chatgpt" | "claude";
 
@@ -44,6 +44,24 @@ interface ImportResult {
   errors: string[];
 }
 
+interface ClaudeConversationSummary {
+  id: string;
+  title?: string;
+  created_at?: string;
+  updated_at?: string;
+  message_count: number;
+  last_message_preview?: string;
+}
+
+interface ClaudeMessageItem {
+  id: string;
+  conversation_id: string;
+  role: string;
+  text: string;
+  created_at?: string;
+  attachment_ids?: string[];
+}
+
 interface NavState {
   stack: Step[];
   index: number;
@@ -52,7 +70,14 @@ interface NavState {
 const DEFAULT_NAV_STATE: NavState = { stack: ["provider"], index: 0 };
 
 function isStep(value: unknown): value is Step {
-  return value === "provider" || value === "guide" || value === "upload" || value === "running" || value === "result";
+  return (
+    value === "provider" ||
+    value === "guide" ||
+    value === "upload" ||
+    value === "running" ||
+    value === "result" ||
+    value === "viewer"
+  );
 }
 
 function isNavState(value: unknown): value is NavState {
@@ -92,6 +117,22 @@ function readNavFromHistoryState(state: unknown): NavState | null {
   if (!state || typeof state !== "object") return null;
   const raw = (state as { minglebotNav?: unknown }).minglebotNav;
   return isNavState(raw) ? raw : null;
+}
+
+function formatDateTime(iso?: string): string {
+  if (!iso) return "";
+  try {
+    return new Date(iso).toLocaleString();
+  } catch {
+    return iso;
+  }
+}
+
+function roleLabel(role: string): string {
+  const lower = role.toLowerCase();
+  if (lower === "human" || lower === "user") return "You";
+  if (lower === "assistant") return "Claude";
+  return role;
 }
 
 async function fetchJson<T>(url: string, options?: RequestInit): Promise<T> {
@@ -144,6 +185,7 @@ export default function App() {
   const [nav, setNav] = useState<NavState>(DEFAULT_NAV_STATE);
   const step = nav.stack[nav.index] ?? "provider";
   const navRef = useRef<NavState>(DEFAULT_NAV_STATE);
+  const messagesViewportRef = useRef<HTMLDivElement | null>(null);
 
   const [providers, setProviders] = useState<Record<string, ProviderGuide>>({});
   const [selectedProvider, setSelectedProvider] = useState<ProviderKey | null>(null);
@@ -160,6 +202,12 @@ export default function App() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [dragOver, setDragOver] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [claudeConversations, setClaudeConversations] = useState<ClaudeConversationSummary[]>([]);
+  const [claudeMessages, setClaudeMessages] = useState<ClaudeMessageItem[]>([]);
+  const [selectedClaudeConversationId, setSelectedClaudeConversationId] = useState<string>("");
+  const [claudeSearch, setClaudeSearch] = useState("");
+  const [isClaudeConversationsLoading, setIsClaudeConversationsLoading] = useState(false);
+  const [isClaudeMessagesLoading, setIsClaudeMessagesLoading] = useState(false);
 
   const setFeedback = useCallback((message: string, tone: Tone = "") => {
     setFeedbackState({ message, tone });
@@ -260,6 +308,77 @@ export default function App() {
     }
   }, [goto, providers, selectedProvider, step]);
 
+  const loadClaudeConversations = useCallback(async () => {
+    setIsClaudeConversationsLoading(true);
+    try {
+      const rows = await fetchJson<ClaudeConversationSummary[]>("/api/claude/conversations");
+      setClaudeConversations(rows);
+
+      if (rows.length === 0) {
+        setSelectedClaudeConversationId("");
+        setClaudeMessages([]);
+        return;
+      }
+
+      setSelectedClaudeConversationId((previousId) =>
+        rows.some((row) => row.id === previousId) ? previousId : rows[0].id
+      );
+    } catch (error) {
+      setClaudeConversations([]);
+      setSelectedClaudeConversationId("");
+      setClaudeMessages([]);
+      setFeedback(
+        `Failed to load Claude conversations: ${error instanceof Error ? error.message : String(error)}`,
+        "err"
+      );
+    } finally {
+      setIsClaudeConversationsLoading(false);
+    }
+  }, [setFeedback]);
+
+  const loadClaudeMessages = useCallback(
+    async (conversationId: string) => {
+      if (!conversationId) {
+        setClaudeMessages([]);
+        return;
+      }
+
+      setIsClaudeMessagesLoading(true);
+      try {
+        const rows = await fetchJson<ClaudeMessageItem[]>(
+          `/api/claude/conversations/${encodeURIComponent(conversationId)}/messages`
+        );
+        setClaudeMessages(rows);
+      } catch (error) {
+        setClaudeMessages([]);
+        setFeedback(
+          `Failed to load Claude messages: ${error instanceof Error ? error.message : String(error)}`,
+          "err"
+        );
+      } finally {
+        setIsClaudeMessagesLoading(false);
+      }
+    },
+    [setFeedback]
+  );
+
+  useEffect(() => {
+    if (step !== "viewer") return;
+    void loadClaudeConversations();
+  }, [loadClaudeConversations, step]);
+
+  useEffect(() => {
+    if (step !== "viewer") return;
+    void loadClaudeMessages(selectedClaudeConversationId);
+  }, [loadClaudeMessages, selectedClaudeConversationId, step]);
+
+  useEffect(() => {
+    if (step !== "viewer") return;
+    const viewport = messagesViewportRef.current;
+    if (!viewport) return;
+    viewport.scrollTop = viewport.scrollHeight;
+  }, [claudeMessages, step]);
+
   const selectFile = useCallback(
     (file: File | null) => {
       if (!file) return;
@@ -338,6 +457,21 @@ jq -c 'select(.provider=="${importResult.provider}")' "${dataRoot}/canonical/mes
 find "${dataRoot}/canonical" -type f`;
   }, [dataRoot, importResult]);
 
+  const filteredClaudeConversations = useMemo(() => {
+    const keyword = claudeSearch.trim().toLowerCase();
+    if (!keyword) return claudeConversations;
+    return claudeConversations.filter((item) => {
+      const title = (item.title || "").toLowerCase();
+      const preview = (item.last_message_preview || "").toLowerCase();
+      return title.includes(keyword) || preview.includes(keyword);
+    });
+  }, [claudeConversations, claudeSearch]);
+
+  const selectedClaudeConversation = useMemo(
+    () => claudeConversations.find((item) => item.id === selectedClaudeConversationId) || null,
+    [claudeConversations, selectedClaudeConversationId]
+  );
+
   const provider = selectedProvider ? providers[selectedProvider] : undefined;
 
   const isRunning = step === "running";
@@ -353,7 +487,7 @@ find "${dataRoot}/canonical" -type f`;
     title = provider ? `${provider.label} export` : "Export";
   } else if (step === "upload") {
     chip = "Step 3";
-    title = `upload ${selectedProvider || ""} zip package`;
+    title = `Upload ${selectedProvider || ""} zip package`;
   } else if (step === "running") {
     chip = "Step 4";
     title = "Processing";
@@ -361,6 +495,10 @@ find "${dataRoot}/canonical" -type f`;
   } else if (step === "result") {
     chip = "Done";
     title = "Import finished";
+  } else if (step === "viewer") {
+    chip = "Viewer";
+    title = "Claude chat viewer";
+    description = "Browse normalized conversations already imported to local storage.";
   }
 
   const primaryButtonClass =
@@ -369,7 +507,7 @@ find "${dataRoot}/canonical" -type f`;
     "inline-flex items-center justify-center rounded-xl border border-[#f2d29a] bg-[#fff5dd] px-4 py-2.5 text-sm font-bold text-[#6a4d2e]";
 
   return (
-    <main className="mx-auto max-w-[760px] px-4 pb-12 pt-8">
+    <main className={`mx-auto px-4 pb-12 pt-8 ${step === "viewer" ? "max-w-[1120px]" : "max-w-[760px]"}`}>
       <header className="mb-4 text-center">
         <div className="text-[40px] font-semibold tracking-[0.2px]">Minglebot</div>
       </header>
@@ -383,21 +521,33 @@ find "${dataRoot}/canonical" -type f`;
 
         <div className="mt-6 grid gap-4">
           {step === "provider" && (
-            <div className="grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-2.5">
-              {Object.entries(providers).map(([key, item]) => (
-                <button
-                  key={key}
-                  type="button"
-                  className="cursor-pointer rounded-[14px] border border-[#f1d9aa] bg-[#fffaf1] px-3 py-3 text-left text-[#2a2012] transition hover:-translate-y-px hover:border-[#f2bc61]"
-                  onClick={() => {
-                    setSelectedProvider(key as ProviderKey);
-                    clearSelectedFile();
-                    goto("guide");
-                  }}
-                >
-                  <span className="block text-base font-bold">{item.label}</span>
-                </button>
-              ))}
+            <div className="grid gap-2.5">
+              <div className="grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-2.5">
+                {Object.entries(providers).map(([key, item]) => (
+                  <button
+                    key={key}
+                    type="button"
+                    className="cursor-pointer rounded-[14px] border border-[#f1d9aa] bg-[#fffaf1] px-3 py-3 text-left text-[#2a2012] transition hover:-translate-y-px hover:border-[#f2bc61]"
+                    onClick={() => {
+                      setSelectedProvider(key as ProviderKey);
+                      clearSelectedFile();
+                      goto("guide");
+                    }}
+                  >
+                    <span className="block text-base font-bold">{item.label}</span>
+                  </button>
+                ))}
+              </div>
+              <button
+                type="button"
+                className={`${ghostButtonClass} justify-center`}
+                onClick={() => {
+                  setSelectedProvider("claude");
+                  goto("viewer");
+                }}
+              >
+                View Claude Chats
+              </button>
             </div>
           )}
 
@@ -548,8 +698,150 @@ find "${dataRoot}/canonical" -type f`;
                 >
                   Copy Commands
                 </button>
+                <button
+                  type="button"
+                  className={ghostButtonClass}
+                  onClick={() => {
+                    setSelectedProvider("claude");
+                    goto("viewer");
+                  }}
+                >
+                  View Claude Chats
+                </button>
               </div>
             </>
+          )}
+
+          {step === "viewer" && (
+            <div className="grid gap-3 lg:grid-cols-[330px_minmax(0,1fr)]">
+              <aside className="rounded-2xl border border-[#efd5a5] bg-[#fff9ec] p-3">
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={claudeSearch}
+                    onChange={(event) => setClaudeSearch(event.target.value)}
+                    placeholder="Search chats"
+                    className="w-full rounded-xl border border-[#eec78a] bg-white px-3 py-2 text-sm outline-none transition focus:border-[#e6942f]"
+                  />
+                  <button type="button" className={ghostButtonClass} onClick={() => void loadClaudeConversations()}>
+                    Refresh
+                  </button>
+                </div>
+
+                <div className="mt-3 h-[520px] space-y-2 overflow-y-auto pr-1">
+                  {isClaudeConversationsLoading && (
+                    <p className="rounded-xl border border-[#f1d9aa] bg-[#fffdf6] p-3 text-sm text-[#6b5a43]">
+                      Loading conversations...
+                    </p>
+                  )}
+
+                  {!isClaudeConversationsLoading && filteredClaudeConversations.length === 0 && (
+                    <p className="rounded-xl border border-[#f1d9aa] bg-[#fffdf6] p-3 text-sm text-[#6b5a43]">
+                      No imported Claude conversations found.
+                    </p>
+                  )}
+
+                  {!isClaudeConversationsLoading &&
+                    filteredClaudeConversations.map((item) => {
+                      const active = item.id === selectedClaudeConversationId;
+                      return (
+                        <button
+                          key={item.id}
+                          type="button"
+                          onClick={() => setSelectedClaudeConversationId(item.id)}
+                          className={`w-full rounded-xl border p-3 text-left transition ${
+                            active
+                              ? "border-[#ed9f43] bg-gradient-to-b from-[#fff2d5] to-[#ffe8c0]"
+                              : "border-[#f1d9aa] bg-[#fffdf8] hover:border-[#e5ad59]"
+                          }`}
+                        >
+                          <div className="max-h-10 overflow-hidden text-sm font-bold text-[#3c2a15]">
+                            {item.title || "Untitled conversation"}
+                          </div>
+                          <div className="mt-1 text-xs text-[#785f40]">
+                            {item.message_count} messages
+                            {item.updated_at || item.created_at
+                              ? ` • ${formatDateTime(item.updated_at || item.created_at)}`
+                              : ""}
+                          </div>
+                          {item.last_message_preview && (
+                            <p className="mt-1 max-h-9 overflow-hidden text-xs text-[#826748]">
+                              {item.last_message_preview}
+                            </p>
+                          )}
+                        </button>
+                      );
+                    })}
+                </div>
+              </aside>
+
+              <section className="flex h-[560px] flex-col rounded-2xl border border-[#efd5a5] bg-gradient-to-b from-[#fffef8] to-[#fff6e2]">
+                <header className="border-b border-[#f1d9aa] px-4 py-3">
+                  <div className="text-base font-bold text-[#2d2213]">
+                    {selectedClaudeConversation?.title || "Select a conversation"}
+                  </div>
+                  <div className="text-xs text-[#7c6445]">
+                    {selectedClaudeConversation?.updated_at || selectedClaudeConversation?.created_at
+                      ? formatDateTime(
+                          selectedClaudeConversation.updated_at || selectedClaudeConversation.created_at
+                        )
+                      : "No timestamp"}
+                  </div>
+                </header>
+
+                <div ref={messagesViewportRef} className="flex-1 space-y-3 overflow-y-auto px-4 py-4">
+                  {isClaudeMessagesLoading && (
+                    <p className="rounded-xl border border-[#f1d9aa] bg-[#fffdf6] p-3 text-sm text-[#6b5a43]">
+                      Loading messages...
+                    </p>
+                  )}
+
+                  {!isClaudeMessagesLoading && !selectedClaudeConversation && (
+                    <p className="rounded-xl border border-[#f1d9aa] bg-[#fffdf6] p-3 text-sm text-[#6b5a43]">
+                      Pick a conversation from the left to view messages.
+                    </p>
+                  )}
+
+                  {!isClaudeMessagesLoading && selectedClaudeConversation && claudeMessages.length === 0 && (
+                    <p className="rounded-xl border border-[#f1d9aa] bg-[#fffdf6] p-3 text-sm text-[#6b5a43]">
+                      This conversation has no messages in the dataset.
+                    </p>
+                  )}
+
+                  {!isClaudeMessagesLoading &&
+                    claudeMessages.map((message) => {
+                      const isAssistant = message.role.toLowerCase() === "assistant";
+                      return (
+                        <article
+                          key={message.id}
+                          className={`flex ${isAssistant ? "justify-start" : "justify-end"}`}
+                        >
+                          <div
+                            className={`max-w-[85%] rounded-2xl px-3 py-2 shadow-[0_2px_6px_rgba(121,73,21,0.08)] ${
+                              isAssistant
+                                ? "border border-[#f0d39f] bg-[#fff5df] text-[#332613]"
+                                : "border border-[#e5a65a] bg-gradient-to-b from-[#ffd99e] to-[#ffc978] text-[#332613]"
+                            }`}
+                          >
+                            <div className="mb-1 text-[11px] font-bold uppercase tracking-wide text-[#7a5a32]">
+                              {roleLabel(message.role)}
+                            </div>
+                            <div className="whitespace-pre-wrap text-[14px] leading-relaxed">
+                              {message.text || "(empty message)"}
+                            </div>
+                            <div className="mt-1 text-[11px] text-[#856744]">
+                              {formatDateTime(message.created_at)}
+                              {message.attachment_ids && message.attachment_ids.length > 0
+                                ? ` • ${message.attachment_ids.length} attachment(s)`
+                                : ""}
+                            </div>
+                          </div>
+                        </article>
+                      );
+                    })}
+                </div>
+              </section>
+            </div>
           )}
 
           {step === "result" && !importResult && (
