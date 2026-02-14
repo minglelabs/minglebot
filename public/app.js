@@ -139,7 +139,14 @@ function renderUpload() {
     <form id="upload-form" class="upload-form">
       <input id="package" name="package" type="file" accept=".zip" hidden />
       <button id="drop-zone" class="drop-zone" type="button">
-        <span class="drop-title">Drop ZIP Here</span>
+        <span id="drop-icon" class="drop-icon" hidden aria-hidden="true">
+          <svg viewBox="0 0 24 24">
+            <path d="M6 2h8l4 4v16H6z"></path>
+            <path d="M14 2v4h4"></path>
+            <path d="M9 11h6M9 14h6M9 17h6"></path>
+          </svg>
+        </span>
+        <span id="drop-title" class="drop-title">Drop ZIP Here</span>
         <span id="drop-file" class="drop-file">or click to choose file</span>
       </button>
       <div class="controls">
@@ -151,11 +158,16 @@ function renderUpload() {
   const form = document.getElementById("upload-form");
   const fileInput = form.querySelector("#package");
   const dropZone = form.querySelector("#drop-zone");
+  const dropIconEl = form.querySelector("#drop-icon");
+  const dropTitleEl = form.querySelector("#drop-title");
   const dropFileEl = form.querySelector("#drop-file");
   let selectedFile = null;
 
   function setSelectedFile(file) {
     selectedFile = file;
+    dropZone.classList.add("has-file");
+    dropTitleEl.hidden = true;
+    dropIconEl.hidden = false;
     dropFileEl.textContent = file.name;
     setFeedback("", "");
     try {
