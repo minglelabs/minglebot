@@ -1,7 +1,7 @@
-# Minglebot
+# MingleBot
 
 <p align="center">
-  <img src="./assets/minglebot-banner-warm.svg" alt="Minglebot banner" width="100%">
+  <img src="./assets/minglebot-banner-warm.svg" alt="MingleBot banner" width="100%">
 </p>
 
 <p align="center">
@@ -20,7 +20,7 @@
 
 ## Mission
 
-Minglebot is an open-source project to build a single, structured local data hub for personal AI workflows.
+MingleBot is an open-source project to build a single, structured local data hub for personal AI workflows.
 
 Phase 1 is clear and concrete:
 
@@ -37,12 +37,12 @@ After this foundation, the scope expands toward broader personal data domains.
 
 ## v1 Operating Mode (Manual Batch Import)
 
-Minglebot v1 intentionally uses a manual batch model:
+MingleBot v1 intentionally uses a manual batch model:
 
 1. User exports full data from provider (ChatGPT/Claude).
 2. User downloads export package.
-3. User imports package into Minglebot.
-4. Minglebot validates, extracts, deduplicates, and updates local dataset.
+3. User imports package into MingleBot.
+4. MingleBot validates, extracts, deduplicates, and updates local dataset.
 
 Why this mode first:
 
@@ -133,7 +133,7 @@ Filesystem format spec: [`docs/filesystem-format-v1.md`](./docs/filesystem-forma
 Centralization alone is not enough, especially for non-developers.
 
 If data only gets dumped into a folder, the practical value stays low.  
-Minglebot therefore treats tool-calling integration as a first-class product concern.
+MingleBot therefore treats tool-calling integration as a first-class product concern.
 
 Target usage includes personal agent environments such as:
 
@@ -152,10 +152,10 @@ Target usage includes personal agent environments such as:
 
 ## Scope Boundary (Important)
 
-Minglebot does not try to automate everything:
+MingleBot does not try to automate everything:
 
 - User handles sensitive auth actions directly (login, grant, verification).
-- Minglebot automates the remaining repeatable collection and organization steps.
+- MingleBot automates the remaining repeatable collection and organization steps.
 
 This keeps the system realistic, safer, and easier to maintain.
 
@@ -164,7 +164,7 @@ This keeps the system realistic, safer, and easier to maintain.
 ```mermaid
 flowchart LR
     A["User Exports Data (Provider UI)"] --> B["User Downloads Export Package"]
-    B --> C["User Imports Package into Minglebot"]
+    B --> C["User Imports Package into MingleBot"]
     C --> D["Validate + Extract + Dedupe + Upsert"]
     D --> E["Expose Agent-Friendly Tool Calls"]
     E --> F["Use via Claude Code / Codex / OpenClaw / etc."]

@@ -1,17 +1,17 @@
-# Minglebot UI/UX Spec v1
+# MingleBot UI/UX Spec v1
 
 Last updated: 2026-02-13
 
 ## 1. Scope
 
-This spec defines v1 UI/UX for Minglebot's manual batch import model.
+This spec defines v1 UI/UX for MingleBot's manual batch import model.
 
 v1 baseline:
 
 1. User exports data from provider manually.
 2. User downloads export package manually.
-3. User imports package into Minglebot.
-4. Minglebot validates, extracts, deduplicates, and updates local dataset.
+3. User imports package into MingleBot.
+4. MingleBot validates, extracts, deduplicates, and updates local dataset.
 
 ## 2. Product goals
 
@@ -95,7 +95,7 @@ Wireframe:
 
 ```text
 +-----------------------------------------------------------+
-| Minglebot                                                 |
+| MingleBot                                                 |
 | Local Data Root: /Users/<user>/MingleData                |
 | Last Import: 2026-02-13 18:20                            |
 |-----------------------------------------------------------|

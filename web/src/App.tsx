@@ -561,7 +561,7 @@ find "${dataRoot}/canonical" -type f`;
                   M
                 </div>
                 <div className="text-[30px] font-semibold leading-none tracking-[-0.02em] text-[#f2e4cf]">
-                  Minglebot
+                  MingleBot
                 </div>
               </div>
 
@@ -737,7 +737,7 @@ find "${dataRoot}/canonical" -type f`;
   return (
     <main className="mx-auto max-w-[760px] px-4 pb-12 pt-8">
       <header className="mb-4 text-center">
-        <div className="text-[40px] font-semibold tracking-[0.2px]">Minglebot</div>
+        <div className="text-[40px] font-semibold tracking-[0.2px]">MingleBot</div>
       </header>
 
       <section className="rounded-[20px] border border-[#f1d9aa] bg-gradient-to-b from-[#fffef9] to-[#fff6df] px-5 py-6 shadow-[0_18px_34px_rgba(170,98,9,0.12),0_4px_10px_rgba(170,98,9,0.08)]">

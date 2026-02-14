@@ -1,10 +1,10 @@
-# Minglebot Filesystem Data Format v1
+# MingleBot Filesystem Data Format v1
 
 Last updated: 2026-02-13
 
 ## 1. Purpose
 
-This spec defines how Minglebot stores data on local filesystem so that:
+This spec defines how MingleBot stores data on local filesystem so that:
 
 - users keep ownership of raw exports
 - user-owned AI agents can search data with basic shell tools (`find`, `grep`, `rg`, `jq`)

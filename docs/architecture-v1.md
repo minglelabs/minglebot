@@ -1,16 +1,16 @@
-# Minglebot Architecture v1
+# MingleBot Architecture v1
 
 Last updated: 2026-02-13
 
 ## 0. Product Goal (v1)
 
-Minglebot v1 focuses on one thing:
+MingleBot v1 focuses on one thing:
 
 - Centralize user chat data from ChatGPT/Claude/Gemini into a local filesystem
 - Make that data easy for user-owned AI agents to explore with basic shell tools (`grep`, `find`, `jq`)
 - Use manual batch import as default operation model (stable dedupe for repeated full exports)
 
-## 1. Should Minglebot be a desktop app?
+## 1. Should MingleBot be a desktop app?
 
 Yes, desktop-first is a strong fit for this project.
 
@@ -55,8 +55,8 @@ Flow:
 
 1. User exports data from provider manually.
 2. User downloads export package manually.
-3. User imports package into Minglebot.
-4. Minglebot validates, extracts, parses, deduplicates, and updates local dataset.
+3. User imports package into MingleBot.
+4. MingleBot validates, extracts, parses, deduplicates, and updates local dataset.
 
 Why:
 

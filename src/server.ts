@@ -350,7 +350,7 @@ async function main(): Promise<void> {
   app.listen(port, () => {
     // Keep startup log concise for local operation.
     // eslint-disable-next-line no-console
-    console.log(`Minglebot running on http://localhost:${port}`);
+    console.log(`MingleBot running on http://localhost:${port}`);
   });
 }
 
