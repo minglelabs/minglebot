@@ -275,7 +275,7 @@ function renderResult() {
   const result = state.importResult;
   chipEl.textContent = "Done";
   titleEl.textContent = "Import finished";
-  descriptionEl.textContent = "Your local dataset was updated with dedupe/upsert.";
+  descriptionEl.textContent = "";
 
   const m = result.counters.messages;
   const cmdText = `rg -n "project|invoice|meeting" "${state.dataRoot}/canonical/messages.ndjson"
