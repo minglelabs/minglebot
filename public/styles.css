@@ -95,6 +95,10 @@ h1 {
   gap: 12px;
 }
 
+.footer-controls {
+  margin-top: 16px;
+}
+
 .minor {
   font-size: 13px;
   color: var(--ink-soft);
@@ -249,6 +253,11 @@ input[type="file"] {
 
 .feedback.err {
   color: var(--err);
+}
+
+#back-button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
 }
 
 details {

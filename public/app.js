@@ -3,9 +3,11 @@ const titleEl = document.getElementById("step-title");
 const descriptionEl = document.getElementById("step-description");
 const bodyEl = document.getElementById("step-body");
 const feedbackEl = document.getElementById("feedback");
+const backButtonEl = document.getElementById("back-button");
 
 const state = {
   step: "provider",
+  history: [],
   providers: {},
   selectedProvider: null,
   dataRoot: "-",
@@ -45,8 +47,22 @@ function setFeedback(message, tone = "") {
   feedbackEl.className = tone ? `feedback ${tone}` : "feedback";
 }
 
-function goto(step) {
+function goto(step, options = {}) {
+  const { replace = false } = options;
+  if (!replace && state.step !== step) {
+    state.history.push(state.step);
+  }
   state.step = step;
+  render();
+}
+
+function goBack() {
+  if (!state.history.length) {
+    state.step = "provider";
+    render();
+    return;
+  }
+  state.step = state.history.pop();
   render();
 }
 
@@ -111,7 +127,6 @@ function renderUpload() {
       </label>
       <div class="controls">
         <button class="btn-primary" type="submit">Run Import</button>
-        <button class="btn-ghost" type="button" data-action="back">Back</button>
       </div>
     </form>
   `;
@@ -146,14 +161,12 @@ function renderUpload() {
       state.lastRun = status.lastRun;
       state.lastRuns = runs;
       setFeedback(`Import complete: ${result.jobId}`, "ok");
-      goto("result");
+      goto("result", { replace: true });
     } catch (error) {
       setFeedback(`Import failed: ${error.message}`, "err");
-      goto("upload");
+      goto("upload", { replace: true });
     }
   });
-
-  form.querySelector('[data-action="back"]').addEventListener("click", () => goto("guide"));
 }
 
 function renderRunning() {
@@ -216,6 +229,8 @@ find "${state.dataRoot}/canonical" -type f</pre>
 }
 
 function render() {
+  backButtonEl.disabled = state.step === "running";
+
   switch (state.step) {
     case "provider":
       renderProvider();
@@ -254,4 +269,9 @@ async function init() {
 
 init().catch((error) => {
   setFeedback(`Failed to load initial state: ${error.message}`, "err");
+});
+
+backButtonEl.addEventListener("click", () => {
+  if (state.step === "running") return;
+  goBack();
 });
