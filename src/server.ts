@@ -37,6 +37,64 @@ interface ClaudeConversationSummary {
   last_message_preview?: string;
 }
 
+function rawConversationId(value: unknown): string {
+  if (!value || typeof value !== "object") return "";
+  const row = value as Record<string, unknown>;
+  return String(row.id || row.uuid || row.conversation_id || row.thread_id || "").trim();
+}
+
+function rawConversationTitle(value: unknown): string | undefined {
+  if (!value || typeof value !== "object") return undefined;
+  const row = value as Record<string, unknown>;
+  if (typeof row.title === "string" && row.title.trim()) return row.title.trim();
+  if (typeof row.name === "string" && row.name.trim()) return row.name.trim();
+  return undefined;
+}
+
+async function recoverClaudeConversationTitles(
+  conversations: CanonicalConversation[]
+): Promise<Map<string, string>> {
+  const missing = conversations.filter((row) => !row.title || !row.title.trim());
+  if (missing.length === 0) return new Map();
+
+  const sourceMap = new Map<string, Set<string>>();
+  for (const row of missing) {
+    if (!row.source_path) continue;
+    const sourcePath = row.source_path.replace(/\\/g, "/");
+    const set = sourceMap.get(sourcePath) || new Set<string>();
+    set.add(row.provider_conversation_id);
+    sourceMap.set(sourcePath, set);
+  }
+
+  if (sourceMap.size === 0) return new Map();
+
+  const absRoot = path.resolve(layout.root);
+  const titleMap = new Map<string, string>();
+
+  await Promise.all(
+    [...sourceMap.entries()].map(async ([sourceRelPath, conversationIds]) => {
+      const absPath = path.resolve(layout.root, sourceRelPath);
+      if (!isPathInsideRoot(absRoot, absPath)) return;
+
+      const rows = await readJsonFile<unknown>(absPath, null);
+      if (!Array.isArray(rows)) return;
+
+      for (const item of rows) {
+        const providerConversationId = rawConversationId(item);
+        if (!providerConversationId) continue;
+        if (!conversationIds.has(providerConversationId)) continue;
+
+        const title = rawConversationTitle(item);
+        if (title) {
+          titleMap.set(providerConversationId, title);
+        }
+      }
+    })
+  );
+
+  return titleMap;
+}
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(process.cwd(), "public")));
@@ -120,6 +178,7 @@ app.get("/api/claude/conversations", async (_req, res) => {
       readNdjson<CanonicalConversation>(conversationsPath),
       readNdjson<CanonicalMessage>(messagesPath)
     ]);
+    const recoveredTitleByConversationId = await recoverClaudeConversationTitles(conversations);
 
     const messageCountByConversation = new Map<string, number>();
     const lastMessageByConversation = new Map<string, CanonicalMessage>();
@@ -140,9 +199,10 @@ app.get("/api/claude/conversations", async (_req, res) => {
       .map((conversation) => {
         const latest = lastMessageByConversation.get(conversation.id);
         const preview = latest?.text?.trim()?.slice(0, 140);
+        const recoveredTitle = recoveredTitleByConversationId.get(conversation.provider_conversation_id);
         return {
           id: conversation.id,
-          title: conversation.title || undefined,
+          title: conversation.title || recoveredTitle || undefined,
           created_at: conversation.created_at,
           updated_at: conversation.updated_at,
           message_count: messageCountByConversation.get(conversation.id) || 0,
