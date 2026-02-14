@@ -47,6 +47,22 @@ flowchart TD
     %% @v1_done [milestone, closed, 2026-02-13, nam]
     v1_done("V1 Milestone Complete<br/><sub>Manual batch import works reliably<br/>for ChatGPT and Claude with dedupe,<br/>upsert, and agent-ready outputs</sub>")
 
+    %% === POST V1 SHIPPED POLISH ===
+    %% @viewer_workspace_ui [ai-task, closed, 2026-02-14, nam]
+    viewer_workspace_ui("Viewer Workspace UI Polish<br/><sub>Redesigned to split-pane layout<br/>with conversation list sidebar and<br/>full-height chat reading workspace</sub>")
+
+    %% @import_flow_simplification [ai-task, closed, 2026-02-14, nam]
+    import_flow_simplification("Import Flow Simplification<br/><sub>Reduced steps, clarified actions,<br/>and aligned run/import transitions<br/>for non-developer usability</sub>")
+
+    %% @provider_identity_labels [ai-task, closed, 2026-02-14, nam]
+    provider_identity_labels("Provider Identity Labels<br/><sub>Show assistant brand labels and<br/>optional model metadata in message<br/>headers across normalized viewer</sub>")
+
+    %% @brand_social_consistency [ai-task, closed, 2026-02-14, nam]
+    brand_social_consistency("Brand and Social Consistency<br/><sub>Unified MingleBot casing, favicon<br/>identity, and OG title/description/<br/>image for repo and web previews</sub>")
+
+    %% @v1_polish_done [milestone, closed, 2026-02-14, nam]
+    v1_polish_done("V1 Polish Milestone Complete<br/><sub>Core v1 experience is production-<br/>presentable with cleaner UX and<br/>consistent public-facing branding</sub>")
+
     %% === POST V1 PARALLEL TRACKS ===
     %% Batch automation track
     %% @batch_schedule_automation [ai-task, opened, 2026-02-13, nam]
@@ -111,14 +127,15 @@ flowchart TD
     %% === CONNECTIONS ===
     project_start --> readme_foundation --> architecture_v1 --> filesystem_format_v1 --> uiux_v1_spec --> batch_import_decision
     batch_import_decision --> desktop_shell --> import_intake --> chatgpt_parser_mapper --> claude_parser_mapper --> dedupe_upsert_engine --> runs_and_result_ui --> agent_handoff --> v1_done
+    v1_done --> viewer_workspace_ui --> import_flow_simplification --> provider_identity_labels --> brand_social_consistency --> v1_polish_done
 
-    v1_done --> gemini_path_v1_5
+    v1_polish_done --> gemini_path_v1_5
 
     %% Parallel branch A: Batch automation
-    v1_done --> batch_schedule_automation --> batch_download_watcher --> batch_reconcile_reports --> batch_automation_done
+    v1_polish_done --> batch_schedule_automation --> batch_download_watcher --> batch_reconcile_reports --> batch_automation_done
 
     %% Parallel branch B: Streaming automation
-    v1_done --> streaming_automation_core
+    v1_polish_done --> streaming_automation_core
     streaming_automation_core --> chatgpt_streaming_turn
     streaming_automation_core --> claude_streaming_turn
     streaming_automation_core --> gemini_streaming_turn
@@ -128,7 +145,7 @@ flowchart TD
     streaming_conflict_guard --> streaming_automation_done
 
     %% Parallel branch C: Data-consumption provider integrations
-    v1_done --> consumer_provider_layer
+    v1_polish_done --> consumer_provider_layer
     consumer_provider_layer --> provider_claude_code
     consumer_provider_layer --> provider_claude_cowork
     consumer_provider_layer --> provider_codex
@@ -147,9 +164,9 @@ flowchart TD
 
     %% === RECENT WORK HIGHLIGHT ===
     subgraph recent [RECENT]
-        batch_import_decision
-        filesystem_format_v1
-        uiux_v1_spec
+        viewer_workspace_ui
+        provider_identity_labels
+        brand_social_consistency
     end
 
     %% === STYLES ===
@@ -169,6 +186,10 @@ flowchart TD
     style dedupe_upsert_engine fill:#2d1f4e,stroke:#c084fc,color:#e9d5ff,stroke-width:1px
     style runs_and_result_ui fill:#2d1f4e,stroke:#c084fc,color:#e9d5ff,stroke-width:1px
     style agent_handoff fill:#2d1f4e,stroke:#c084fc,color:#e9d5ff,stroke-width:1px
+    style viewer_workspace_ui fill:#2d1f4e,stroke:#c084fc,color:#e9d5ff,stroke-width:1px
+    style import_flow_simplification fill:#2d1f4e,stroke:#c084fc,color:#e9d5ff,stroke-width:1px
+    style provider_identity_labels fill:#2d1f4e,stroke:#c084fc,color:#e9d5ff,stroke-width:1px
+    style brand_social_consistency fill:#2d1f4e,stroke:#c084fc,color:#e9d5ff,stroke-width:2px
 
     %% Open tasks: green
     style gemini_path_v1_5 fill:#111827,stroke:#34d399,color:#a7f3d0,stroke-width:1px
@@ -189,6 +210,7 @@ flowchart TD
 
     %% Milestones
     style v1_done fill:#2d1f4e,stroke:#c084fc,color:#e9d5ff,stroke-width:2px
+    style v1_polish_done fill:#2d1f4e,stroke:#c084fc,color:#e9d5ff,stroke-width:2px
     style batch_automation_done fill:#1f2937,stroke:#fbbf24,color:#fde68a,stroke-width:2px
     style streaming_automation_done fill:#1f2937,stroke:#fbbf24,color:#fde68a,stroke-width:2px
     style consumer_provider_done fill:#1f2937,stroke:#fbbf24,color:#fde68a,stroke-width:2px
