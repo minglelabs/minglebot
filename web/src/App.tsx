@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from "react";
+import { toast } from "sonner";
 
 type Step = "provider" | "guide" | "upload" | "running" | "result" | "viewer";
 type Tone = "" | "ok" | "err";
@@ -453,7 +454,8 @@ export default function App() {
         setDataRoot(status.dataRoot || "-");
         setLastRun(status.lastRun || null);
         setLastRuns(runs);
-        setFeedback(`Import complete: ${result.jobId}`, "ok");
+        setFeedback("");
+        toast.success(`Import complete: ${result.jobId}`);
         setSelectedProvider("claude");
         goto("viewer", { replace: true });
       } catch (error) {
