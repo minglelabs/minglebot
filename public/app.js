@@ -82,21 +82,18 @@ function renderGuide() {
   const provider = state.providers[state.selectedProvider];
   chipEl.textContent = "Step 2";
   titleEl.textContent = `${provider.label} export`;
-  descriptionEl.textContent = "Open the export page, download your package, then continue.";
+  descriptionEl.textContent = "";
 
   bodyEl.innerHTML = `
     <div class="controls">
-      <a class="btn-primary btn-link" href="${provider.exportUrl}" target="_blank" rel="noreferrer">Open Export Page</a>
-    </div>
-    <p class="minor">After download finishes, move to the upload step.</p>
-    <div class="controls">
-      <button class="btn-primary" data-action="next">I downloaded it</button>
-      <button class="btn-ghost" data-action="back">Back</button>
+      <button class="btn-primary" data-action="open">Open Export Page</button>
     </div>
   `;
 
-  bodyEl.querySelector('[data-action="next"]').addEventListener("click", () => goto("upload"));
-  bodyEl.querySelector('[data-action="back"]').addEventListener("click", () => goto("provider"));
+  bodyEl.querySelector('[data-action="open"]').addEventListener("click", () => {
+    window.open(provider.exportUrl, "_blank", "noopener,noreferrer");
+    goto("upload");
+  });
 }
 
 function renderUpload() {
