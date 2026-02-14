@@ -10,7 +10,6 @@ export type ClaudeAutomationState =
   | "starting"
   | "active_login_required"
   | "active_ready"
-  | "active_export_requested"
   | "stopped";
 
 export interface ClaudeAutomationStatus {
@@ -77,41 +76,6 @@ async function requiresLogin(page: Page): Promise<boolean> {
   return hints.some(Boolean);
 }
 
-async function tryClickExportButton(page: Page): Promise<{ clicked: boolean; message: string }> {
-  const selectors = [
-    'button:has-text("Request data export")',
-    'button:has-text("Request export")',
-    'button:has-text("Export data")',
-    'button:has-text("Create export")',
-    'button:has-text("Download data")'
-  ];
-
-  for (const selector of selectors) {
-    const button = page.locator(selector).first();
-    const visible = await button.isVisible({ timeout: 700 }).catch(() => false);
-    if (!visible) continue;
-
-    const enabled = await button.isEnabled().catch(() => true);
-    if (!enabled) {
-      return {
-        clicked: false,
-        message: "Export button is visible but currently disabled. Complete required settings and click manually."
-      };
-    }
-
-    await button.click({ timeout: 5000 });
-    return {
-      clicked: true,
-      message: "Export request was triggered. Watch for confirmation email from Claude."
-    };
-  }
-
-  return {
-    clicked: false,
-    message: "Claude privacy page is open. If export controls differ, request export manually there."
-  };
-}
-
 function buildPlaywrightError(error: unknown): Error {
   const raw = error instanceof Error ? error.message : String(error);
   if (raw.includes("Executable doesn't exist") || raw.includes("browserType.launch")) {
@@ -154,15 +118,9 @@ async function initializeClaudeAutomation(session: ClaudeAutomationSession): Pro
     return;
   }
 
-  const exportAction = await tryClickExportButton(session.page);
-  if (exportAction.clicked) {
-    session.state = "active_export_requested";
-    session.message = exportAction.message;
-    return;
-  }
-
   session.state = "active_ready";
-  session.message = exportAction.message;
+  session.message =
+    "Claude privacy page is ready. Complete any bot check manually, then click the export request yourself.";
 }
 
 export function getClaudeAutomationStatus(): ClaudeAutomationStatus {

@@ -98,7 +98,7 @@ pnpm exec playwright install chromium
 ```
 
 2. In the app, choose `Claude` and click `Launch Claude Assistant`.
-3. Complete login/verification yourself, then request export.
+3. Complete login/bot-check/verification yourself, then request export.
 4. Download the export package and continue with `Import ZIP File`.
 
 Security boundary remains unchanged:
