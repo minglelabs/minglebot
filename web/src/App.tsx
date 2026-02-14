@@ -557,7 +557,7 @@ find "${dataRoot}/canonical" -type f`;
           <aside className="flex min-h-0 flex-col border-r border-[#35312a] bg-gradient-to-b from-[#2b2722] via-[#231f1b] to-[#1a1815]">
             <header className="shrink-0 border-b border-[#35312a] px-4 py-4">
               <div className="flex items-center gap-3">
-                <div className="grid h-8 w-8 place-content-center rounded-md bg-gradient-to-br from-[#f7ba6d] to-[#e4933c] text-sm font-black text-[#24150a]">
+                <div className="grid h-8 w-8 place-content-center rounded-md bg-gradient-to-br from-[#f7ba6d] to-[#e4933c] text-base font-black text-[#24150a]">
                   M
                 </div>
                 <div className="text-[30px] font-semibold leading-none tracking-[-0.02em] text-[#f2e4cf]">
