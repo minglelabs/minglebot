@@ -578,10 +578,21 @@ find "${dataRoot}/canonical" -type f`;
                 </button>
                 <button
                   type="button"
-                  className="inline-flex h-9 min-w-[86px] items-center justify-center rounded-lg border border-[#4c4338] bg-[#2a251e] px-3 text-sm font-semibold text-[#e7d8c2] transition hover:bg-[#322c24]"
-                  onClick={() => void loadClaudeConversations()}
+                  className="inline-flex h-9 min-w-[126px] items-center justify-center rounded-lg border border-[#4c4338] bg-[#2a251e] px-3 text-sm font-semibold text-[#e7d8c2] transition hover:bg-[#322c24]"
+                  onClick={async () => {
+                    try {
+                      await fetchJson<{ ok: boolean; path: string }>("/api/open-data-root", {
+                        method: "POST"
+                      });
+                      toast.success("Opened data folder.");
+                    } catch (error) {
+                      toast.error(
+                        `Could not open data folder: ${error instanceof Error ? error.message : String(error)}`
+                      );
+                    }
+                  }}
                 >
-                  Refresh
+                  Show Data Folder
                 </button>
               </div>
 
@@ -596,6 +607,7 @@ find "${dataRoot}/canonical" -type f`;
                 <div className="mt-2 text-xs text-[#a9957d]">
                   Total conversations: {claudeConversations.length}
                 </div>
+                <div className="mt-1 break-all text-[11px] text-[#8f7b63]">Data root: {dataRoot}</div>
               </div>
             </header>
 

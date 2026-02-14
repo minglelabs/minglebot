@@ -285,6 +285,24 @@ app.post("/api/open-import-folder", async (req, res) => {
   }
 });
 
+app.post("/api/open-data-root", async (_req, res) => {
+  try {
+    const absTarget = path.resolve(layout.root);
+    const stat = await fs.stat(absTarget).catch(() => null);
+    if (!stat || !stat.isDirectory()) {
+      res.status(404).json({ error: "Data root does not exist." });
+      return;
+    }
+
+    await openInFileManager(absTarget);
+    res.json({ ok: true, path: absTarget });
+  } catch (error) {
+    res.status(500).json({
+      error: error instanceof Error ? error.message : String(error)
+    });
+  }
+});
+
 app.post("/api/import", upload.single("package"), async (req, res) => {
   if (!req.file) {
     res.status(400).json({ error: "Missing package upload field: package" });
