@@ -7,70 +7,18 @@
     <link rel="stylesheet" href="/styles.css" />
   </head>
   <body>
-    <main class="container">
-      <header class="hero">
-        <h1>Minglebot</h1>
-        <p>Manual batch import for local-first personal data.</p>
-        <div class="meta">
-          <span id="data-root">Data Root: -</span>
-          <span id="last-run">Last Run: -</span>
-        </div>
+    <main class="app">
+      <header class="brand">
+        <div class="logo">Minglebot</div>
+        <p class="tagline">Local batch import for personal AI data</p>
       </header>
 
-      <section class="card">
-        <h2>1) Provider Export Guide</h2>
-        <div id="provider-cards" class="provider-grid"></div>
-      </section>
-
-      <section class="card">
-        <h2>2) Import Package</h2>
-        <form id="import-form">
-          <div class="row">
-            <label for="provider">Provider</label>
-            <select id="provider" name="provider" required>
-              <option value="chatgpt">ChatGPT</option>
-              <option value="claude">Claude</option>
-              <option value="gemini">Gemini (Partial)</option>
-            </select>
-          </div>
-          <div class="row">
-            <label for="package">Export package</label>
-            <input id="package" name="package" type="file" required />
-          </div>
-          <div class="row inline">
-            <input id="retainPackage" name="retainPackage" type="checkbox" />
-            <label for="retainPackage">Retain downloaded package in data root</label>
-          </div>
-          <button type="submit">Start Import</button>
-          <p id="import-status" class="status"></p>
-        </form>
-      </section>
-
-      <section class="card" id="result-card" hidden>
-        <h2>3) Import Result</h2>
-        <div id="result-summary" class="result-grid"></div>
-        <div class="commands">
-          <h3>Agent-ready commands</h3>
-          <pre id="command-snippets"></pre>
-        </div>
-      </section>
-
-      <section class="card">
-        <h2>Recent Runs</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>Run ID</th>
-              <th>Provider</th>
-              <th>Status</th>
-              <th>Started</th>
-              <th>New</th>
-              <th>Updated</th>
-              <th>Unchanged</th>
-            </tr>
-          </thead>
-          <tbody id="runs-table"></tbody>
-        </table>
+      <section class="wizard" id="wizard">
+        <div class="step-chip" id="step-chip">Step 1</div>
+        <h1 id="step-title">Welcome</h1>
+        <p id="step-description" class="step-description"></p>
+        <div id="step-body" class="step-body"></div>
+        <p id="feedback" class="feedback" hidden></p>
       </section>
     </main>
 
