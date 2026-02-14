@@ -8,6 +8,11 @@ import { resolveLayout, ensureLayout } from "./core/layout";
 import { readJsonFile, readNdjson } from "./lib/fsx";
 import { runImport } from "./core/import-run";
 import { CanonicalConversation, CanonicalMessage, Provider, RunRecord } from "./types/schema";
+import {
+  getClaudeAutomationStatus,
+  startClaudeAutomation,
+  stopClaudeAutomation
+} from "./automation/claude-browser";
 
 const app = express();
 const port = Number(process.env.PORT || 4242);
@@ -296,6 +301,32 @@ app.post("/api/open-data-root", async (_req, res) => {
 
     await openInFileManager(absTarget);
     res.json({ ok: true, path: absTarget });
+  } catch (error) {
+    res.status(500).json({
+      error: error instanceof Error ? error.message : String(error)
+    });
+  }
+});
+
+app.get("/api/automation/claude/status", (_req, res) => {
+  res.json(getClaudeAutomationStatus());
+});
+
+app.post("/api/automation/claude/start", async (_req, res) => {
+  try {
+    const status = await startClaudeAutomation(layout.root);
+    res.json(status);
+  } catch (error) {
+    res.status(500).json({
+      error: error instanceof Error ? error.message : String(error)
+    });
+  }
+});
+
+app.post("/api/automation/claude/stop", async (_req, res) => {
+  try {
+    const status = await stopClaudeAutomation();
+    res.json(status);
   } catch (error) {
     res.status(500).json({
       error: error instanceof Error ? error.message : String(error)

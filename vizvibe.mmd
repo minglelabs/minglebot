@@ -72,6 +72,9 @@ flowchart TD
     %% @data_folder_actions [ai-task, closed, 2026-02-14, nam]
     data_folder_actions("Data Folder Access Actions<br/><sub>Added direct open-folder actions<br/>for data root and import output to<br/>verify results from desktop quickly</sub>")
 
+    %% @claude_playwright_assistant [ai-task, closed, 2026-02-14, nam]
+    claude_playwright_assistant("Claude Playwright Assistant<br/><sub>Added Claude-first browser helper<br/>API + UI actions to open export flow<br/>with reusable local browser profile</sub>")
+
     %% @brand_social_consistency [ai-task, closed, 2026-02-14, nam]
     brand_social_consistency("Brand and Social Consistency<br/><sub>Unified MingleBot casing, favicon<br/>identity, and OG title/description/<br/>image for repo and web previews</sub>")
 
@@ -142,7 +145,7 @@ flowchart TD
     %% === CONNECTIONS ===
     project_start --> readme_foundation --> architecture_v1 --> filesystem_format_v1 --> uiux_v1_spec --> batch_import_decision
     batch_import_decision --> desktop_shell --> import_intake --> chatgpt_parser_mapper --> claude_parser_mapper --> dedupe_upsert_engine --> runs_and_result_ui --> agent_handoff --> v1_done
-    v1_done --> viewer_workspace_ui --> import_flow_simplification --> history_navigation_sync --> upload_interaction_polish --> provider_identity_labels --> conversation_metadata_backfill --> import_feedback_toasts --> data_folder_actions --> brand_social_consistency --> v1_polish_done
+    v1_done --> viewer_workspace_ui --> import_flow_simplification --> history_navigation_sync --> upload_interaction_polish --> provider_identity_labels --> conversation_metadata_backfill --> import_feedback_toasts --> data_folder_actions --> claude_playwright_assistant --> brand_social_consistency --> v1_polish_done
 
     v1_polish_done --> gemini_path_v1_5
 
@@ -179,6 +182,7 @@ flowchart TD
 
     %% === RECENT WORK HIGHLIGHT ===
     subgraph recent [RECENT]
+        claude_playwright_assistant
         history_navigation_sync
         conversation_metadata_backfill
         brand_social_consistency
@@ -209,6 +213,7 @@ flowchart TD
     style conversation_metadata_backfill fill:#2d1f4e,stroke:#c084fc,color:#e9d5ff,stroke-width:1px
     style import_feedback_toasts fill:#2d1f4e,stroke:#c084fc,color:#e9d5ff,stroke-width:1px
     style data_folder_actions fill:#2d1f4e,stroke:#c084fc,color:#e9d5ff,stroke-width:1px
+    style claude_playwright_assistant fill:#2d1f4e,stroke:#c084fc,color:#e9d5ff,stroke-width:1px
     style brand_social_consistency fill:#2d1f4e,stroke:#c084fc,color:#e9d5ff,stroke-width:2px
 
     %% Open tasks: green

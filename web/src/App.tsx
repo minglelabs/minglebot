@@ -65,6 +65,16 @@ interface ClaudeMessageItem {
   attachment_ids?: string[];
 }
 
+interface ClaudeAutomationStatusResponse {
+  active: boolean;
+  state: string;
+  message: string;
+  startedAt?: string;
+  currentUrl?: string;
+  profilePath?: string;
+  reusedSession?: boolean;
+}
+
 interface NavState {
   stack: Step[];
   index: number;
@@ -239,6 +249,8 @@ export default function App() {
   const [claudeSearch, setClaudeSearch] = useState("");
   const [isClaudeConversationsLoading, setIsClaudeConversationsLoading] = useState(false);
   const [isClaudeMessagesLoading, setIsClaudeMessagesLoading] = useState(false);
+  const [claudeAutomation, setClaudeAutomation] = useState<ClaudeAutomationStatusResponse | null>(null);
+  const [isClaudeAutomationBusy, setIsClaudeAutomationBusy] = useState(false);
 
   const setFeedback = useCallback((message: string, tone: Tone = "") => {
     setFeedbackState({ message, tone });
@@ -310,10 +322,11 @@ export default function App() {
 
     async function init(): Promise<void> {
       try {
-        const [status, providerMap, runs] = await Promise.all([
+        const [status, providerMap, runs, automationStatus] = await Promise.all([
           fetchJson<StatusResponse>("/api/status"),
           fetchJson<Record<string, ProviderGuide>>("/api/providers"),
-          fetchJson<RunRecord[]>("/api/runs")
+          fetchJson<RunRecord[]>("/api/runs"),
+          fetchJson<ClaudeAutomationStatusResponse>("/api/automation/claude/status").catch(() => null)
         ]);
 
         if (cancelled) return;
@@ -321,6 +334,9 @@ export default function App() {
         setDataRoot(status.dataRoot || "-");
         setLastRun(status.lastRun || null);
         setLastRuns(runs);
+        if (automationStatus) {
+          setClaudeAutomation(automationStatus);
+        }
 
         if (runs.length > 0 && navRef.current.stack[navRef.current.index] === "provider") {
           setSelectedProvider("claude");
@@ -353,6 +369,52 @@ export default function App() {
       goto("provider", { replace: true });
     }
   }, [goto, providers, selectedProvider, step]);
+
+  const refreshClaudeAutomationStatus = useCallback(async () => {
+    try {
+      const next = await fetchJson<ClaudeAutomationStatusResponse>("/api/automation/claude/status");
+      setClaudeAutomation(next);
+    } catch {
+      // Ignore background status refresh errors.
+    }
+  }, []);
+
+  const launchClaudeAutomation = useCallback(async () => {
+    setIsClaudeAutomationBusy(true);
+    try {
+      const next = await fetchJson<ClaudeAutomationStatusResponse>("/api/automation/claude/start", {
+        method: "POST"
+      });
+      setClaudeAutomation(next);
+      toast.success(next.message || "Claude automation browser opened.");
+      goto("upload");
+    } catch (error) {
+      toast.error(`Could not start Claude automation: ${error instanceof Error ? error.message : String(error)}`);
+    } finally {
+      setIsClaudeAutomationBusy(false);
+    }
+  }, [goto]);
+
+  const closeClaudeAutomation = useCallback(async () => {
+    setIsClaudeAutomationBusy(true);
+    try {
+      const next = await fetchJson<ClaudeAutomationStatusResponse>("/api/automation/claude/stop", {
+        method: "POST"
+      });
+      setClaudeAutomation(next);
+      toast.success(next.message || "Claude automation browser closed.");
+    } catch (error) {
+      toast.error(`Could not close Claude automation: ${error instanceof Error ? error.message : String(error)}`);
+    } finally {
+      setIsClaudeAutomationBusy(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (step === "guide" && selectedProvider === "claude") {
+      void refreshClaudeAutomationStatus();
+    }
+  }, [refreshClaudeAutomationStatus, selectedProvider, step]);
 
   const loadClaudeConversations = useCallback(async () => {
     setIsClaudeConversationsLoading(true);
@@ -780,26 +842,56 @@ find "${dataRoot}/canonical" -type f`;
           )}
 
           {step === "guide" && provider && (
-            <div className="flex flex-wrap gap-2">
-              <button
-                type="button"
-                className={primaryButtonClass}
-                onClick={() => {
-                  window.open(provider.exportUrl, "_blank", "noopener,noreferrer");
-                  goto("upload");
-                }}
-              >
-                Open Export Page
-              </button>
-              <button
-                type="button"
-                className={ghostButtonClass}
-                onClick={() => {
-                  goto("upload");
-                }}
-              >
-                Import ZIP File
-              </button>
+            <div className="grid gap-2.5">
+              <div className="flex flex-wrap gap-2">
+                {selectedProvider === "claude" && (
+                  <button
+                    type="button"
+                    className={`${primaryButtonClass} disabled:cursor-not-allowed disabled:opacity-60`}
+                    onClick={() => {
+                      void launchClaudeAutomation();
+                    }}
+                    disabled={isClaudeAutomationBusy}
+                  >
+                    {isClaudeAutomationBusy ? "Starting..." : "Launch Claude Assistant"}
+                  </button>
+                )}
+                <button
+                  type="button"
+                  className={selectedProvider === "claude" ? ghostButtonClass : primaryButtonClass}
+                  onClick={() => {
+                    window.open(provider.exportUrl, "_blank", "noopener,noreferrer");
+                    goto("upload");
+                  }}
+                >
+                  Open Export Page
+                </button>
+                <button
+                  type="button"
+                  className={ghostButtonClass}
+                  onClick={() => {
+                    goto("upload");
+                  }}
+                >
+                  Import ZIP File
+                </button>
+                {selectedProvider === "claude" && claudeAutomation?.active && (
+                  <button
+                    type="button"
+                    className={`${ghostButtonClass} disabled:cursor-not-allowed disabled:opacity-60`}
+                    onClick={() => {
+                      void closeClaudeAutomation();
+                    }}
+                    disabled={isClaudeAutomationBusy}
+                  >
+                    Close Claude Assistant
+                  </button>
+                )}
+              </div>
+
+              {selectedProvider === "claude" && claudeAutomation?.message && (
+                <p className="text-xs text-[#7b664a]">{claudeAutomation.message}</p>
+              )}
             </div>
           )}
 
