@@ -66,19 +66,21 @@ function goto(step, options = {}) {
 }
 
 function goBack() {
-  if (!state.history.length) {
-    state.step = "provider";
-    render();
-    return;
+  const prevStep = state.history.pop();
+  if (!prevStep) return;
+  if (state.step !== prevStep) {
+    state.future.push(state.step);
   }
-  state.future.push(state.step);
-  goto(state.history.pop(), { fromHistory: true });
+  goto(prevStep, { fromHistory: true });
 }
 
 function goForward() {
-  if (!state.future.length) return;
-  state.history.push(state.step);
-  goto(state.future.pop(), { fromForward: true });
+  const nextStep = state.future.pop();
+  if (!nextStep) return;
+  if (state.step !== nextStep) {
+    state.history.push(state.step);
+  }
+  goto(nextStep, { fromForward: true });
 }
 
 function renderProvider() {

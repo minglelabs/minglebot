@@ -102,6 +102,14 @@ h1 {
   flex-wrap: wrap;
 }
 
+.nav-arrow {
+  min-width: 48px;
+  min-height: 40px;
+  font-size: 20px;
+  font-weight: 800;
+  padding: 0 10px;
+}
+
 .minor {
   font-size: 13px;
   color: var(--ink-soft);
