@@ -53,7 +53,7 @@ function goto(step) {
 function renderProvider() {
   chipEl.textContent = "Step 1";
   titleEl.textContent = "Choose data source";
-  descriptionEl.textContent = "ChatGPT, GEMINI, CLAUDE";
+  descriptionEl.textContent = "";
 
   const cards = Object.entries(state.providers)
     .map(
