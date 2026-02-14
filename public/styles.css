@@ -90,9 +90,9 @@ h1 {
 }
 
 .step-body {
-  margin-top: 20px;
+  margin-top: 24px;
   display: grid;
-  gap: 12px;
+  gap: 16px;
 }
 
 .footer-controls {
@@ -162,6 +162,7 @@ h1 {
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
+  margin-top: 4px;
 }
 
 button,
@@ -189,13 +190,47 @@ button,
   color: #6a4d2e;
 }
 
-input[type="file"] {
-  width: 100%;
-  border: 1px dashed #d5b078;
-  background: #fffbf3;
-  border-radius: 12px;
-  padding: 12px;
-  color: var(--ink-soft);
+.upload-form {
+  display: grid;
+  gap: 16px;
+  justify-items: center;
+}
+
+.drop-zone {
+  width: min(100%, 360px);
+  aspect-ratio: 1 / 1;
+  border: 2px dashed #d7ae6f;
+  border-radius: 20px;
+  background: linear-gradient(180deg, #fff7e2, #fff2d6);
+  color: #7a5a33;
+  display: grid;
+  place-content: center;
+  text-align: center;
+  gap: 8px;
+  padding: 20px;
+  margin: 8px auto;
+  transition: border-color 0.14s ease, transform 0.14s ease, background 0.14s ease;
+}
+
+.drop-zone:hover {
+  border-color: #ee9b35;
+  transform: translateY(-1px);
+}
+
+.drop-zone.dragover {
+  border-color: #f97316;
+  background: linear-gradient(180deg, #fff1cd, #ffe8bd);
+}
+
+.drop-title {
+  font-size: 22px;
+  font-weight: 800;
+  color: #5e431f;
+}
+
+.drop-file {
+  font-size: 13px;
+  color: #8a6a45;
 }
 
 .toggle {

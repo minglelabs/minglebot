@@ -128,18 +128,18 @@ function renderGuide() {
 }
 
 function renderUpload() {
-  const provider = state.providers[state.selectedProvider];
+  const providerKey = state.selectedProvider;
   chipEl.textContent = "Step 3";
-  titleEl.textContent = "Upload package";
-  descriptionEl.textContent = `${provider.label} package only. Then run import.`;
+  titleEl.textContent = `upload ${providerKey} zip package`;
+  descriptionEl.textContent = "";
 
   bodyEl.innerHTML = `
-    <form id="upload-form">
-      <input id="package" name="package" type="file" required />
-      <label class="toggle">
-        <input id="retain" name="retainPackage" type="checkbox" />
-        Keep downloaded package
-      </label>
+    <form id="upload-form" class="upload-form">
+      <input id="package" name="package" type="file" accept=".zip" hidden />
+      <button id="drop-zone" class="drop-zone" type="button">
+        <span class="drop-title">Drop ZIP Here</span>
+        <span id="drop-file" class="drop-file">or click to choose file</span>
+      </button>
       <div class="controls">
         <button class="btn-primary" type="submit">Run Import</button>
       </div>
@@ -147,10 +147,50 @@ function renderUpload() {
   `;
 
   const form = document.getElementById("upload-form");
+  const fileInput = form.querySelector("#package");
+  const dropZone = form.querySelector("#drop-zone");
+  const dropFileEl = form.querySelector("#drop-file");
+  let selectedFile = null;
+
+  function setSelectedFile(file) {
+    selectedFile = file;
+    dropFileEl.textContent = file.name;
+    setFeedback("", "");
+    try {
+      const dt = new DataTransfer();
+      dt.items.add(file);
+      fileInput.files = dt.files;
+    } catch {
+      // keep selected file in state even if FileList assignment is blocked
+    }
+  }
+
+  dropZone.addEventListener("click", () => fileInput.click());
+  fileInput.addEventListener("change", () => {
+    const file = fileInput.files && fileInput.files[0];
+    if (file) setSelectedFile(file);
+  });
+
+  dropZone.addEventListener("dragover", (event) => {
+    event.preventDefault();
+    dropZone.classList.add("dragover");
+  });
+
+  dropZone.addEventListener("dragleave", () => {
+    dropZone.classList.remove("dragover");
+  });
+
+  dropZone.addEventListener("drop", (event) => {
+    event.preventDefault();
+    dropZone.classList.remove("dragover");
+    const file = event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files[0];
+    if (file) setSelectedFile(file);
+  });
+
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
-    const fileInput = form.querySelector("#package");
-    if (!fileInput.files || !fileInput.files[0]) {
+    const file = selectedFile || (fileInput.files && fileInput.files[0]);
+    if (!file) {
       setFeedback("Choose a package file first.", "err");
       return;
     }
@@ -160,9 +200,7 @@ function renderUpload() {
 
     const formData = new FormData();
     formData.set("provider", state.selectedProvider);
-    formData.set("package", fileInput.files[0]);
-    const retainChecked = form.querySelector("#retain").checked;
-    if (retainChecked) formData.set("retainPackage", "true");
+    formData.set("package", file);
 
     try {
       const result = await fetchJson("/api/import", {
