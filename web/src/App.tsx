@@ -135,6 +135,14 @@ function roleLabel(role: string): string {
   return role;
 }
 
+function cleanViewerText(text: string): string {
+  return text
+    .replace(/```[\s\n]*This block is not supported on your current device yet\.[\s\n]*```/g, "")
+    .replace(/This block is not supported on your current device yet\./g, "")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+}
+
 async function fetchJson<T>(url: string, options?: RequestInit): Promise<T> {
   const response = await fetch(url, options);
   const rawText = await response.text();
@@ -501,10 +509,6 @@ find "${dataRoot}/canonical" -type f`;
   } else if (step === "result") {
     chip = "Done";
     title = "Import finished";
-  } else if (step === "viewer") {
-    chip = "Viewer";
-    title = "Claude chat viewer";
-    description = "Browse normalized conversations already imported to local storage.";
   }
 
   const primaryButtonClass =
@@ -512,8 +516,197 @@ find "${dataRoot}/canonical" -type f`;
   const ghostButtonClass =
     "inline-flex items-center justify-center rounded-xl border border-[#f2d29a] bg-[#fff5dd] px-4 py-2.5 text-sm font-bold text-[#6a4d2e]";
 
+  if (step === "viewer") {
+    return (
+      <main className="min-h-screen bg-[#1f1d1a] text-[#e9e0d3]">
+        <div className="grid min-h-screen md:grid-cols-[320px_minmax(0,1fr)]">
+          <aside className="flex min-h-[42vh] flex-col border-b border-[#35312a] bg-gradient-to-b from-[#2b2722] via-[#231f1b] to-[#1a1815] md:min-h-screen md:border-b-0 md:border-r">
+            <header className="border-b border-[#35312a] px-4 py-4">
+              <div className="flex items-center gap-3">
+                <div className="grid h-8 w-8 place-content-center rounded-md bg-gradient-to-br from-[#f7ba6d] to-[#e4933c] text-sm font-black text-[#24150a]">
+                  M
+                </div>
+                <div className="text-[30px] font-semibold leading-none tracking-[-0.02em] text-[#f2e4cf]">
+                  Minglebot
+                </div>
+              </div>
+
+              <div className="mt-4 flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  className={`inline-flex h-9 w-9 items-center justify-center rounded-lg border text-base ${
+                    canGoBack
+                      ? "border-[#4c4338] bg-[#2a251e] text-[#eadbc4]"
+                      : "cursor-not-allowed border-[#3a352f] bg-[#23201b] text-[#6f6458]"
+                  }`}
+                  onClick={goBack}
+                  disabled={!canGoBack}
+                  aria-label="Back"
+                >
+                  ←
+                </button>
+                <button
+                  type="button"
+                  className={`inline-flex h-9 w-9 items-center justify-center rounded-lg border text-base ${
+                    canGoForward
+                      ? "border-[#4c4338] bg-[#2a251e] text-[#eadbc4]"
+                      : "cursor-not-allowed border-[#3a352f] bg-[#23201b] text-[#6f6458]"
+                  }`}
+                  onClick={goForward}
+                  disabled={!canGoForward}
+                  aria-label="Forward"
+                >
+                  →
+                </button>
+                <button
+                  type="button"
+                  className="inline-flex h-9 min-w-[96px] items-center justify-center rounded-lg border border-[#5f4d35] bg-[#3a2e20] px-3 text-sm font-semibold text-[#f5d6a8] transition hover:bg-[#473827]"
+                  onClick={() => {
+                    clearSelectedFile();
+                    goto("provider");
+                  }}
+                >
+                  Add Data
+                </button>
+                <button
+                  type="button"
+                  className="inline-flex h-9 min-w-[86px] items-center justify-center rounded-lg border border-[#4c4338] bg-[#2a251e] px-3 text-sm font-semibold text-[#e7d8c2] transition hover:bg-[#322c24]"
+                  onClick={() => void loadClaudeConversations()}
+                >
+                  Refresh
+                </button>
+              </div>
+
+              <div className="mt-3">
+                <input
+                  type="text"
+                  value={claudeSearch}
+                  onChange={(event) => setClaudeSearch(event.target.value)}
+                  placeholder="Search chats"
+                  className="w-full rounded-lg border border-[#4f463b] bg-[#1e1b17] px-3 py-2 text-sm text-[#efe4d2] outline-none placeholder:text-[#8f8475] focus:border-[#7f6848]"
+                />
+              </div>
+            </header>
+
+            <div className="flex-1 space-y-1.5 overflow-y-auto px-2 py-2">
+              {isClaudeConversationsLoading && (
+                <p className="rounded-lg border border-[#3b352d] bg-[#26221d] p-3 text-sm text-[#c8baa6]">
+                  Loading conversations...
+                </p>
+              )}
+
+              {!isClaudeConversationsLoading && filteredClaudeConversations.length === 0 && (
+                <p className="rounded-lg border border-[#3b352d] bg-[#26221d] p-3 text-sm text-[#c8baa6]">
+                  No imported Claude conversations found.
+                </p>
+              )}
+
+              {!isClaudeConversationsLoading &&
+                filteredClaudeConversations.map((item) => {
+                  const active = item.id === selectedClaudeConversationId;
+                  return (
+                    <button
+                      key={item.id}
+                      type="button"
+                      onClick={() => setSelectedClaudeConversationId(item.id)}
+                      className={`w-full rounded-lg border px-3 py-2 text-left transition ${
+                        active
+                          ? "border-[#7b6240] bg-[#342c22]"
+                          : "border-[#373128] bg-[#25211b] hover:border-[#5a4c39] hover:bg-[#2d2720]"
+                      }`}
+                    >
+                      <div className="max-h-10 overflow-hidden text-sm font-semibold text-[#f2e6d2]">
+                        {item.title || "Untitled conversation"}
+                      </div>
+                      <div className="mt-1 text-[11px] text-[#a9957d]">
+                        {item.message_count} messages
+                        {item.updated_at || item.created_at
+                          ? ` • ${formatDateTime(item.updated_at || item.created_at)}`
+                          : ""}
+                      </div>
+                    </button>
+                  );
+                })}
+            </div>
+          </aside>
+
+          <section className="flex min-h-[58vh] flex-col md:min-h-screen">
+            <header className="border-b border-[#35312a] bg-[#22201cd6] px-5 py-4 backdrop-blur">
+              <div className="text-[21px] font-semibold text-[#f2e7d6]">
+                {selectedClaudeConversation?.title || "Select a conversation"}
+              </div>
+              <div className="mt-1 text-xs text-[#a79279]">
+                {selectedClaudeConversation?.updated_at || selectedClaudeConversation?.created_at
+                  ? formatDateTime(selectedClaudeConversation.updated_at || selectedClaudeConversation.created_at)
+                  : "No timestamp"}
+              </div>
+            </header>
+
+            <div ref={messagesViewportRef} className="flex-1 overflow-y-auto px-4 py-6 sm:px-6">
+              <div className="mx-auto w-full max-w-[940px] space-y-4">
+                {isClaudeMessagesLoading && (
+                  <p className="rounded-xl border border-[#3b352d] bg-[#26221d] p-4 text-sm text-[#d0c2ad]">
+                    Loading messages...
+                  </p>
+                )}
+
+                {!isClaudeMessagesLoading && !selectedClaudeConversation && (
+                  <p className="rounded-xl border border-[#3b352d] bg-[#26221d] p-4 text-sm text-[#d0c2ad]">
+                    Pick a conversation from the left to view messages.
+                  </p>
+                )}
+
+                {!isClaudeMessagesLoading && selectedClaudeConversation && claudeMessages.length === 0 && (
+                  <p className="rounded-xl border border-[#3b352d] bg-[#26221d] p-4 text-sm text-[#d0c2ad]">
+                    This conversation has no messages in the dataset.
+                  </p>
+                )}
+
+                {!isClaudeMessagesLoading &&
+                  claudeMessages.map((message) => {
+                    const isAssistant = message.role.toLowerCase() === "assistant";
+                    const cleaned = cleanViewerText(message.text || "");
+                    return (
+                      <article key={message.id} className={`flex ${isAssistant ? "justify-start" : "justify-end"}`}>
+                        <div
+                          className={`max-w-[90%] rounded-2xl border px-4 py-3 ${
+                            isAssistant
+                              ? "border-[#3d372f] bg-[#26221d] text-[#efe4d3]"
+                              : "border-[#7a5b36] bg-gradient-to-b from-[#6f5232] to-[#5f4529] text-[#f7eee0]"
+                          }`}
+                        >
+                          <div className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-[#bfaa8a]">
+                            {roleLabel(message.role)}
+                          </div>
+                          <div className="whitespace-pre-wrap text-[15px] leading-[1.65]">
+                            {cleaned || "(empty message)"}
+                          </div>
+                          <div className="mt-2 text-[11px] text-[#9d8a73]">
+                            {formatDateTime(message.created_at)}
+                            {message.attachment_ids && message.attachment_ids.length > 0
+                              ? ` • ${message.attachment_ids.length} attachment(s)`
+                              : ""}
+                          </div>
+                        </div>
+                      </article>
+                    );
+                  })}
+              </div>
+            </div>
+
+            {feedback.message && (
+              <p className={`border-t border-[#35312a] px-5 py-2 text-sm ${feedback.tone === "ok" ? "text-[#4fd1c5]" : "text-[#fca5a5]"}`}>
+                {feedback.message}
+              </p>
+            )}
+          </section>
+        </div>
+      </main>
+    );
+  }
+
   return (
-    <main className={`mx-auto px-4 pb-12 pt-8 ${step === "viewer" ? "max-w-[1120px]" : "max-w-[760px]"}`}>
+    <main className="mx-auto max-w-[760px] px-4 pb-12 pt-8">
       <header className="mb-4 text-center">
         <div className="text-[40px] font-semibold tracking-[0.2px]">Minglebot</div>
       </header>
@@ -716,148 +909,6 @@ find "${dataRoot}/canonical" -type f`;
                 </button>
               </div>
             </>
-          )}
-
-          {step === "viewer" && (
-            <div className="grid gap-3 lg:grid-cols-[330px_minmax(0,1fr)]">
-              <aside className="rounded-2xl border border-[#efd5a5] bg-[#fff9ec] p-3">
-                <div className="flex flex-wrap gap-2">
-                  <input
-                    type="text"
-                    value={claudeSearch}
-                    onChange={(event) => setClaudeSearch(event.target.value)}
-                    placeholder="Search chats"
-                    className="min-w-0 flex-1 rounded-xl border border-[#eec78a] bg-white px-3 py-2 text-sm outline-none transition focus:border-[#e6942f]"
-                  />
-                  <button type="button" className={ghostButtonClass} onClick={() => void loadClaudeConversations()}>
-                    Refresh
-                  </button>
-                  <button
-                    type="button"
-                    className={ghostButtonClass}
-                    onClick={() => {
-                      clearSelectedFile();
-                      goto("provider");
-                    }}
-                  >
-                    Add Data
-                  </button>
-                </div>
-
-                <div className="mt-3 h-[520px] space-y-2 overflow-y-auto pr-1">
-                  {isClaudeConversationsLoading && (
-                    <p className="rounded-xl border border-[#f1d9aa] bg-[#fffdf6] p-3 text-sm text-[#6b5a43]">
-                      Loading conversations...
-                    </p>
-                  )}
-
-                  {!isClaudeConversationsLoading && filteredClaudeConversations.length === 0 && (
-                    <p className="rounded-xl border border-[#f1d9aa] bg-[#fffdf6] p-3 text-sm text-[#6b5a43]">
-                      No imported Claude conversations found.
-                    </p>
-                  )}
-
-                  {!isClaudeConversationsLoading &&
-                    filteredClaudeConversations.map((item) => {
-                      const active = item.id === selectedClaudeConversationId;
-                      return (
-                        <button
-                          key={item.id}
-                          type="button"
-                          onClick={() => setSelectedClaudeConversationId(item.id)}
-                          className={`w-full rounded-xl border p-3 text-left transition ${
-                            active
-                              ? "border-[#ed9f43] bg-gradient-to-b from-[#fff2d5] to-[#ffe8c0]"
-                              : "border-[#f1d9aa] bg-[#fffdf8] hover:border-[#e5ad59]"
-                          }`}
-                        >
-                          <div className="max-h-10 overflow-hidden text-sm font-bold text-[#3c2a15]">
-                            {item.title || "Untitled conversation"}
-                          </div>
-                          <div className="mt-1 text-xs text-[#785f40]">
-                            {item.message_count} messages
-                            {item.updated_at || item.created_at
-                              ? ` • ${formatDateTime(item.updated_at || item.created_at)}`
-                              : ""}
-                          </div>
-                          {item.last_message_preview && (
-                            <p className="mt-1 max-h-9 overflow-hidden text-xs text-[#826748]">
-                              {item.last_message_preview}
-                            </p>
-                          )}
-                        </button>
-                      );
-                    })}
-                </div>
-              </aside>
-
-              <section className="flex h-[560px] flex-col rounded-2xl border border-[#efd5a5] bg-gradient-to-b from-[#fffef8] to-[#fff6e2]">
-                <header className="border-b border-[#f1d9aa] px-4 py-3">
-                  <div className="text-base font-bold text-[#2d2213]">
-                    {selectedClaudeConversation?.title || "Select a conversation"}
-                  </div>
-                  <div className="text-xs text-[#7c6445]">
-                    {selectedClaudeConversation?.updated_at || selectedClaudeConversation?.created_at
-                      ? formatDateTime(
-                          selectedClaudeConversation.updated_at || selectedClaudeConversation.created_at
-                        )
-                      : "No timestamp"}
-                  </div>
-                </header>
-
-                <div ref={messagesViewportRef} className="flex-1 space-y-3 overflow-y-auto px-4 py-4">
-                  {isClaudeMessagesLoading && (
-                    <p className="rounded-xl border border-[#f1d9aa] bg-[#fffdf6] p-3 text-sm text-[#6b5a43]">
-                      Loading messages...
-                    </p>
-                  )}
-
-                  {!isClaudeMessagesLoading && !selectedClaudeConversation && (
-                    <p className="rounded-xl border border-[#f1d9aa] bg-[#fffdf6] p-3 text-sm text-[#6b5a43]">
-                      Pick a conversation from the left to view messages.
-                    </p>
-                  )}
-
-                  {!isClaudeMessagesLoading && selectedClaudeConversation && claudeMessages.length === 0 && (
-                    <p className="rounded-xl border border-[#f1d9aa] bg-[#fffdf6] p-3 text-sm text-[#6b5a43]">
-                      This conversation has no messages in the dataset.
-                    </p>
-                  )}
-
-                  {!isClaudeMessagesLoading &&
-                    claudeMessages.map((message) => {
-                      const isAssistant = message.role.toLowerCase() === "assistant";
-                      return (
-                        <article
-                          key={message.id}
-                          className={`flex ${isAssistant ? "justify-start" : "justify-end"}`}
-                        >
-                          <div
-                            className={`max-w-[85%] rounded-2xl px-3 py-2 shadow-[0_2px_6px_rgba(121,73,21,0.08)] ${
-                              isAssistant
-                                ? "border border-[#f0d39f] bg-[#fff5df] text-[#332613]"
-                                : "border border-[#e5a65a] bg-gradient-to-b from-[#ffd99e] to-[#ffc978] text-[#332613]"
-                            }`}
-                          >
-                            <div className="mb-1 text-[11px] font-bold uppercase tracking-wide text-[#7a5a32]">
-                              {roleLabel(message.role)}
-                            </div>
-                            <div className="whitespace-pre-wrap text-[14px] leading-relaxed">
-                              {message.text || "(empty message)"}
-                            </div>
-                            <div className="mt-1 text-[11px] text-[#856744]">
-                              {formatDateTime(message.created_at)}
-                              {message.attachment_ids && message.attachment_ids.length > 0
-                                ? ` • ${message.attachment_ids.length} attachment(s)`
-                                : ""}
-                            </div>
-                          </div>
-                        </article>
-                      );
-                    })}
-                </div>
-              </section>
-            </div>
           )}
 
           {step === "result" && !importResult && (
