@@ -1,4 +1,4 @@
-export type Provider = "chatgpt" | "claude" | "gemini";
+export type Provider = "chatgpt" | "claude" | "gemini" | "cursor";
 
 export type AttachmentStatus = "embedded" | "linked" | "missing";
 export type AttachmentStorage = "blob" | "url" | "missing";

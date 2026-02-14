@@ -1,6 +1,8 @@
 import { Provider, ProviderParseResult } from "../types/schema";
 import { parseChatGPT } from "./chatgpt";
 import { parseClaude } from "./claude";
+import { parseCursor } from "./cursor";
+import { parseGemini } from "./gemini";
 
 export async function parseProviderExport(
   provider: Provider,
@@ -14,7 +16,9 @@ export async function parseProviderExport(
     case "claude":
       return parseClaude(extractedRoot, sourceRelRoot, jobId);
     case "gemini":
-      throw new Error("Gemini parser is not implemented yet in v1. Please use ChatGPT or Claude imports.");
+      return parseGemini(extractedRoot, sourceRelRoot, jobId);
+    case "cursor":
+      return parseCursor(extractedRoot, sourceRelRoot, jobId);
     default:
       throw new Error(`Unsupported provider: ${provider}`);
   }

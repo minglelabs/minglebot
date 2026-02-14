@@ -3,7 +3,7 @@ import { toast } from "sonner";
 
 type Step = "provider" | "guide" | "upload" | "running" | "result" | "viewer";
 type Tone = "" | "ok" | "err";
-type ProviderKey = "chatgpt" | "claude";
+type ProviderKey = "chatgpt" | "claude" | "gemini" | "cursor";
 
 interface ProviderGuide {
   label: string;
@@ -155,6 +155,7 @@ function assistantProviderLabel(provider?: string): string {
   if (value === "chatgpt") return "ChatGPT";
   if (value === "claude") return "Claude";
   if (value === "gemini") return "Gemini";
+  if (value === "cursor") return "Cursor";
   return "Assistant";
 }
 
@@ -535,7 +536,8 @@ find "${dataRoot}/canonical" -type f`;
     title = provider ? `${provider.label} export` : "Export";
   } else if (step === "upload") {
     chip = "Step 3";
-    title = `Upload ${selectedProvider || ""} zip package`;
+    const packageLabel = selectedProvider === "cursor" ? "export package" : "zip package";
+    title = `Upload ${selectedProvider || ""} ${packageLabel}`.trim();
   } else if (step === "running") {
     chip = "Step 4";
     title = "Processing";
@@ -809,7 +811,7 @@ find "${dataRoot}/canonical" -type f`;
                 ref={fileInputRef}
                 name="package"
                 type="file"
-                accept=".zip"
+                accept=".zip,.json,.ndjson,.txt,.md,.markdown"
                 className="hidden"
                 onChange={(event) => selectFile(event.target.files?.[0] || null)}
               />

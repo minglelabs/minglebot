@@ -24,7 +24,7 @@ MingleBot is an open-source project to build a single, structured local data hub
 
 Phase 1 is clear and concrete:
 
-- Collect chat data from ChatGPT and Claude first (Gemini follows in later milestones)
+- Collect chat data from ChatGPT, Claude, Gemini, and Cursor exports
 - Normalize and organize it into one local filesystem location
 - Make it directly usable by personal agent systems
 
@@ -39,7 +39,7 @@ After this foundation, the scope expands toward broader personal data domains.
 
 MingleBot v1 intentionally uses a manual batch model:
 
-1. User exports full data from provider (ChatGPT/Claude).
+1. User exports full data from provider (ChatGPT/Claude/Gemini/Cursor).
 2. User downloads export package.
 3. User imports package into MingleBot.
 4. MingleBot validates, extracts, deduplicates, and updates local dataset.
@@ -54,7 +54,7 @@ Why this mode first:
 
 v1 is successful when the following are true:
 
-1. Users can import full export packages from ChatGPT and Claude through a local desktop UI flow.
+1. Users can import export packages from ChatGPT, Claude, Gemini, and Cursor through a local desktop UI flow.
 2. Repeated full-export imports are deduped/upserted correctly (no uncontrolled canonical duplication).
 3. `canonical/messages.ndjson` and related datasets remain stable and agent-searchable (`rg`, `jq`, `find`).
 4. Import runs provide transparent status and result counters (`new`, `updated`, `unchanged`, `failed`).
@@ -78,8 +78,8 @@ Then open `http://localhost:4242`.
 
 What you can do now:
 
-1. Open provider export guide links (ChatGPT/Claude).
-2. Upload export package (`.zip/.json/.ndjson/.txt`).
+1. Open provider export guide links (ChatGPT/Claude/Gemini/Cursor).
+2. Upload export package (`.zip/.json/.ndjson/.txt/.md`).
 3. Run import with dedupe/upsert.
 4. See run history and copy agent-ready shell commands.
 
@@ -90,16 +90,18 @@ Data root default:
 ## v1 Milestone Status
 
 - [x] Local desktop-style app shell (`Home`, `Import`, `Runs`, `Data`-oriented flow)
-- [x] Manual package intake and validation (`.zip/.json/.ndjson/.txt`)
+- [x] Manual package intake and validation (`.zip/.json/.ndjson/.txt/.md`)
 - [x] ChatGPT parser/mapper
 - [x] Claude parser/mapper
+- [x] Gemini parser/mapper
+- [x] Cursor parser/mapper
 - [x] Canonical dedupe/upsert engine for repeated full exports
 - [x] Run history and import result counters (`new/updated/unchanged/failed`)
 - [x] Agent handoff snippets (`rg` / `jq` / `find`)
 
 Current limitation:
 
-- Gemini ingestion is not exposed in the current v1 UI and remains tracked for v1.5.
+- Dedicated viewers are not yet implemented for non-Claude providers.
 
 ## Use Your Centralized Filesystem
 
@@ -178,7 +180,7 @@ flowchart LR
 
 ## Roadmap
 
-1. Reliable ingestion pipeline for ChatGPT/Claude/Gemini chat data
+1. Reliable ingestion pipeline for ChatGPT/Claude/Gemini/Cursor chat data
 2. Provider-specific parsing + canonical dedupe/upsert mapping
 3. Tool-calling surface for personal agent systems
 4. Import-first desktop UX for non-developers

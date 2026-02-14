@@ -1,0 +1,35 @@
+{
+  "conversations": [
+    {
+      "id": "gm_1",
+      "title": "Gemini Test Conversation",
+      "created_at": "2026-02-03T09:00:00Z",
+      "updated_at": "2026-02-03T09:05:00Z",
+      "messages": [
+        {
+          "id": "gm_msg_1",
+          "role": "user",
+          "content": [
+            {
+              "text": "hello gemini"
+            }
+          ],
+          "created_at": "2026-02-03T09:00:01Z"
+        },
+        {
+          "id": "gm_msg_2",
+          "role": "model",
+          "content": {
+            "parts": [
+              {
+                "text": "hi from model"
+              }
+            ]
+          },
+          "model": "gemini-2.0-flash",
+          "created_at": "2026-02-03T09:00:02Z"
+        }
+      ]
+    }
+  ]
+}

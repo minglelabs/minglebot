@@ -136,6 +136,34 @@ flowchart TD
     %% @gemini_path_v1_5 [ai-task, opened, 2026-02-13, nam]
     gemini_path_v1_5("Gemini Path (v1.5)<br/><sub>Integrate stable collection path<br/>after ChatGPT/Claude v1 pipeline is<br/>proven in production usage</sub>")
 
+    %% Provider collection track
+    %% @provider_collection_layer [ai-task, opened, 2026-02-14, nam]
+    provider_collection_layer("Provider Collection Layer<br/><sub>Track source-specific collection<br/>capabilities for each provider and<br/>keep ingestion adapters explicit</sub>")
+
+    %% @source_chatgpt_export_ops [ai-task, opened, 2026-02-14, nam]
+    source_chatgpt_export_ops("ChatGPT Source Node<br/><sub>Maintain export compatibility and<br/>schema drift handling for ongoing<br/>ChatGPT package ingestion quality</sub>")
+
+    %% @source_claude_export_ops [ai-task, opened, 2026-02-14, nam]
+    source_claude_export_ops("Claude Source Node<br/><sub>Track Claude export format changes<br/>and keep parser stability for local<br/>batch import operations</sub>")
+
+    %% @source_gemini_export_ops [ai-task, opened, 2026-02-14, nam]
+    source_gemini_export_ops("Gemini Source Node<br/><sub>Integrate Gemini export payloads<br/>and harden schema mapping into<br/>canonical storage contracts</sub>")
+
+    %% @source_cursor_export_ops [ai-task, opened, 2026-02-14, nam]
+    source_cursor_export_ops("Cursor Source Node<br/><sub>Ingest Cursor chat exports (md/json)<br/>and normalize role/message fields<br/>for canonical dataset use</sub>")
+
+    %% @source_claude_code_export_ops [ai-task, opened, 2026-02-14, nam]
+    source_claude_code_export_ops("Claude Code Source Node<br/><sub>Map Claude Code session/resume<br/>artifacts into importable records<br/>once stable source paths are fixed</sub>")
+
+    %% @source_codex_export_ops [ai-task, opened, 2026-02-14, nam]
+    source_codex_export_ops("Codex Source Node<br/><sub>Define reliable Codex conversation<br/>collection route and normalize into<br/>shared canonical schema</sub>")
+
+    %% @source_antigravity_export_ops [ai-task, opened, 2026-02-14, nam]
+    source_antigravity_export_ops("Antigravity Source Node<br/><sub>Investigate stable export/local-log<br/>path and add deterministic parser<br/>for ingestion into MingleBot</sub>")
+
+    %% @provider_collection_done [milestone, opened, 2026-02-14, nam]
+    provider_collection_done("Provider Collection Milestone<br/><sub>Major chat providers each have an<br/>explicit source node with importable<br/>local collection path and parser</sub>")
+
     %% @ultimate_goal [end, opened, 2026-02-13, nam]
     ultimate_goal("Personal Data Hub Complete<br/><sub>Unified local-first personal data<br/>platform usable by user-owned AI<br/>agent systems at daily workflow level</sub>")
 
@@ -145,6 +173,7 @@ flowchart TD
     v1_done --> viewer_workspace_ui --> import_flow_simplification --> history_navigation_sync --> upload_interaction_polish --> provider_identity_labels --> conversation_metadata_backfill --> import_feedback_toasts --> data_folder_actions --> brand_social_consistency --> v1_polish_done
 
     v1_polish_done --> gemini_path_v1_5
+    v1_polish_done --> provider_collection_layer
 
     %% Parallel branch A: Batch automation
     v1_polish_done --> batch_schedule_automation --> batch_download_watcher --> batch_reconcile_reports --> batch_automation_done
@@ -172,16 +201,35 @@ flowchart TD
     provider_openclaw --> consumer_provider_done
     provider_mcp_generic --> consumer_provider_done
 
+    %% Parallel branch D: Provider source collection nodes
+    provider_collection_layer --> source_chatgpt_export_ops
+    provider_collection_layer --> source_claude_export_ops
+    provider_collection_layer --> source_gemini_export_ops
+    provider_collection_layer --> source_cursor_export_ops
+    provider_collection_layer --> source_claude_code_export_ops
+    provider_collection_layer --> source_codex_export_ops
+    provider_collection_layer --> source_antigravity_export_ops
+    source_chatgpt_export_ops --> provider_collection_done
+    source_claude_export_ops --> provider_collection_done
+    source_gemini_export_ops --> provider_collection_done
+    source_cursor_export_ops --> provider_collection_done
+    source_claude_code_export_ops --> provider_collection_done
+    source_codex_export_ops --> provider_collection_done
+    source_antigravity_export_ops --> provider_collection_done
+
     gemini_path_v1_5 --> ultimate_goal
     batch_automation_done --> ultimate_goal
     streaming_automation_done --> ultimate_goal
     consumer_provider_done --> ultimate_goal
+    provider_collection_done --> ultimate_goal
 
     %% === RECENT WORK HIGHLIGHT ===
     subgraph recent [RECENT]
+        source_gemini_export_ops
+        source_cursor_export_ops
         history_navigation_sync
         conversation_metadata_backfill
-        brand_social_consistency
+        provider_collection_layer
     end
 
     %% === STYLES ===
@@ -227,6 +275,14 @@ flowchart TD
     style provider_codex fill:#111827,stroke:#34d399,color:#a7f3d0,stroke-width:1px
     style provider_openclaw fill:#111827,stroke:#34d399,color:#a7f3d0,stroke-width:1px
     style provider_mcp_generic fill:#111827,stroke:#34d399,color:#a7f3d0,stroke-width:1px
+    style provider_collection_layer fill:#111827,stroke:#34d399,color:#a7f3d0,stroke-width:1px
+    style source_chatgpt_export_ops fill:#111827,stroke:#34d399,color:#a7f3d0,stroke-width:1px
+    style source_claude_export_ops fill:#111827,stroke:#34d399,color:#a7f3d0,stroke-width:1px
+    style source_gemini_export_ops fill:#111827,stroke:#34d399,color:#a7f3d0,stroke-width:1px
+    style source_cursor_export_ops fill:#111827,stroke:#34d399,color:#a7f3d0,stroke-width:1px
+    style source_claude_code_export_ops fill:#111827,stroke:#34d399,color:#a7f3d0,stroke-width:1px
+    style source_codex_export_ops fill:#111827,stroke:#34d399,color:#a7f3d0,stroke-width:1px
+    style source_antigravity_export_ops fill:#111827,stroke:#34d399,color:#a7f3d0,stroke-width:1px
 
     %% Milestones
     style v1_done fill:#2d1f4e,stroke:#c084fc,color:#e9d5ff,stroke-width:2px
@@ -234,6 +290,7 @@ flowchart TD
     style batch_automation_done fill:#1f2937,stroke:#fbbf24,color:#fde68a,stroke-width:2px
     style streaming_automation_done fill:#1f2937,stroke:#fbbf24,color:#fde68a,stroke-width:2px
     style consumer_provider_done fill:#1f2937,stroke:#fbbf24,color:#fde68a,stroke-width:2px
+    style provider_collection_done fill:#1f2937,stroke:#fbbf24,color:#fde68a,stroke-width:2px
     style ultimate_goal fill:#1f2937,stroke:#34d399,color:#a7f3d0,stroke-width:2px
 
     style recent fill:transparent,stroke:#c084fc,color:#c084fc,stroke-width:2px,stroke-dasharray:5 5

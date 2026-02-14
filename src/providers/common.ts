@@ -8,6 +8,12 @@ export interface JsonDoc {
   value: unknown;
 }
 
+export interface TextDoc {
+  absPath: string;
+  relPath: string;
+  text: string;
+}
+
 export async function loadJsonDocuments(extractedRoot: string): Promise<JsonDoc[]> {
   const files = await listFilesRecursive(extractedRoot);
   const jsonFiles = files.filter((filePath) => filePath.toLowerCase().endsWith(".json"));
@@ -23,6 +29,31 @@ export async function loadJsonDocuments(extractedRoot: string): Promise<JsonDoc[
       });
     } catch {
       // Ignore malformed files. Higher-level parser reports if no usable docs found.
+    }
+  }
+
+  return docs;
+}
+
+export async function loadTextDocuments(
+  extractedRoot: string,
+  extensions: string[] = [".md", ".markdown", ".txt"]
+): Promise<TextDoc[]> {
+  const files = await listFilesRecursive(extractedRoot);
+  const normalized = new Set(extensions.map((ext) => ext.toLowerCase()));
+  const textFiles = files.filter((filePath) => normalized.has(path.extname(filePath).toLowerCase()));
+  const docs: TextDoc[] = [];
+
+  for (const filePath of textFiles) {
+    try {
+      const raw = await fs.readFile(filePath, "utf-8");
+      docs.push({
+        absPath: filePath,
+        relPath: path.relative(extractedRoot, filePath).replace(/\\/g, "/"),
+        text: raw
+      });
+    } catch {
+      // Ignore unreadable files.
     }
   }
 

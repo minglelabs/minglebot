@@ -141,10 +141,12 @@ export async function runImport(request: ImportRequest): Promise<ImportResult> {
     if (ext === ".zip") {
       const zip = new AdmZip(request.packagePath);
       zip.extractAllTo(extractedRoot, true);
-    } else if ([".json", ".txt", ".ndjson"].includes(ext)) {
+    } else if ([".json", ".txt", ".ndjson", ".md", ".markdown"].includes(ext)) {
       await fs.copyFile(request.packagePath, path.join(extractedRoot, fileName));
     } else {
-      throw new Error("Unsupported package format. Please upload .zip, .json, .ndjson, or .txt");
+      throw new Error(
+        "Unsupported package format. Please upload .zip, .json, .ndjson, .txt, .md, or .markdown"
+      );
     }
 
     if (retainPackage) {
