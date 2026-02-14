@@ -49,6 +49,51 @@ interface NavState {
   index: number;
 }
 
+const DEFAULT_NAV_STATE: NavState = { stack: ["provider"], index: 0 };
+
+function isStep(value: unknown): value is Step {
+  return value === "provider" || value === "guide" || value === "upload" || value === "running" || value === "result";
+}
+
+function isNavState(value: unknown): value is NavState {
+  if (!value || typeof value !== "object") return false;
+  const candidate = value as { stack?: unknown; index?: unknown };
+  if (!Array.isArray(candidate.stack)) return false;
+  if (typeof candidate.index !== "number") return false;
+  if (!Number.isInteger(candidate.index)) return false;
+  if (!candidate.stack.every((item) => isStep(item))) return false;
+  if (candidate.stack.length === 0) return false;
+  if (candidate.index < 0 || candidate.index >= candidate.stack.length) return false;
+  return true;
+}
+
+function buildNextNav(prev: NavState, next: Step, replace = false): NavState {
+  const active = prev.stack[prev.index] ?? "provider";
+  if (active === next) return prev;
+
+  if (replace) {
+    const updated = [...prev.stack];
+    updated[prev.index] = next;
+    return { stack: updated, index: prev.index };
+  }
+
+  const trimmed = prev.stack.slice(0, prev.index + 1);
+  trimmed.push(next);
+  return { stack: trimmed, index: prev.index + 1 };
+}
+
+function historyStateWithNav(nextNav: NavState): Record<string, unknown> {
+  const current = window.history.state;
+  const base = current && typeof current === "object" ? (current as Record<string, unknown>) : {};
+  return { ...base, minglebotNav: nextNav };
+}
+
+function readNavFromHistoryState(state: unknown): NavState | null {
+  if (!state || typeof state !== "object") return null;
+  const raw = (state as { minglebotNav?: unknown }).minglebotNav;
+  return isNavState(raw) ? raw : null;
+}
+
 async function fetchJson<T>(url: string, options?: RequestInit): Promise<T> {
   const response = await fetch(url, options);
   const rawText = await response.text();
@@ -96,8 +141,9 @@ function FileArchiveIcon() {
 }
 
 export default function App() {
-  const [nav, setNav] = useState<NavState>({ stack: ["provider"], index: 0 });
+  const [nav, setNav] = useState<NavState>(DEFAULT_NAV_STATE);
   const step = nav.stack[nav.index] ?? "provider";
+  const navRef = useRef<NavState>(DEFAULT_NAV_STATE);
 
   const [providers, setProviders] = useState<Record<string, ProviderGuide>>({});
   const [selectedProvider, setSelectedProvider] = useState<ProviderKey | null>(null);
@@ -120,31 +166,54 @@ export default function App() {
   }, []);
 
   const goto = useCallback((next: Step, options?: { replace?: boolean }) => {
-    setNav((prev) => {
-      const active = prev.stack[prev.index] ?? "provider";
+    const current = navRef.current;
+    const nextNav = buildNextNav(current, next, options?.replace === true);
+    if (nextNav === current) return;
 
-      if (options?.replace) {
-        if (active === next) return prev;
-        const updated = [...prev.stack];
-        updated[prev.index] = next;
-        return { stack: updated, index: prev.index };
-      }
+    navRef.current = nextNav;
+    setNav(nextNav);
 
-      if (active === next) return prev;
-      const trimmed = prev.stack.slice(0, prev.index + 1);
-      trimmed.push(next);
-      return { stack: trimmed, index: prev.index + 1 };
-    });
+    if (options?.replace) {
+      window.history.replaceState(historyStateWithNav(nextNav), "");
+      return;
+    }
+    window.history.pushState(historyStateWithNav(nextNav), "");
   }, []);
 
   const goBack = useCallback(() => {
-    setNav((prev) => (prev.index > 0 ? { stack: prev.stack, index: prev.index - 1 } : prev));
+    if (navRef.current.index <= 0) return;
+    window.history.back();
   }, []);
 
   const goForward = useCallback(() => {
-    setNav((prev) =>
-      prev.index < prev.stack.length - 1 ? { stack: prev.stack, index: prev.index + 1 } : prev
-    );
+    if (navRef.current.index >= navRef.current.stack.length - 1) return;
+    window.history.forward();
+  }, []);
+
+  useEffect(() => {
+    navRef.current = nav;
+  }, [nav]);
+
+  useEffect(() => {
+    const fromHistory = readNavFromHistoryState(window.history.state);
+    if (fromHistory) {
+      navRef.current = fromHistory;
+      setNav(fromHistory);
+    } else {
+      window.history.replaceState(historyStateWithNav(DEFAULT_NAV_STATE), "");
+    }
+
+    const handlePopState = (event: PopStateEvent) => {
+      const nextNav = readNavFromHistoryState(event.state);
+      const safeNav = nextNav ?? DEFAULT_NAV_STATE;
+      navRef.current = safeNav;
+      setNav(safeNav);
+    };
+
+    window.addEventListener("popstate", handlePopState);
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+    };
   }, []);
 
   useEffect(() => {
