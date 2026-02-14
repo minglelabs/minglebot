@@ -408,7 +408,7 @@ find "${dataRoot}/canonical" -type f`;
 
               <div className="flex flex-wrap gap-2">
                 <button type="submit" className={primaryButtonClass}>
-                  실행
+                  Run Import
                 </button>
               </div>
             </form>
