@@ -154,7 +154,7 @@ function renderUpload() {
         <button id="clear-file" class="btn-ghost" type="button" disabled>Clear</button>
       </div>
       <div class="controls">
-        <button class="btn-primary" type="submit">Run Import</button>
+        <button class="btn-primary" type="submit">실행</button>
       </div>
     </form>
   `;
@@ -290,15 +290,9 @@ find "${state.dataRoot}/canonical" -type f`;
       <article class="metric"><div class="k">Failed</div><div class="v">${m.failed}</div></article>
     </div>
     <div class="controls">
-      <button class="btn-primary" data-action="again">Import Another</button>
       <button class="btn-ghost" data-action="copy">Copy Commands</button>
     </div>
   `;
-
-  bodyEl.querySelector('[data-action="again"]').addEventListener("click", () => {
-    setFeedback("", "");
-    goto("provider");
-  });
 
   bodyEl.querySelector('[data-action="copy"]').addEventListener("click", async () => {
     try {
