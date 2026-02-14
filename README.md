@@ -87,25 +87,6 @@ Data root default:
 
 - `./data` (override with `MINGLE_DATA_ROOT`)
 
-## Claude Browser Automation (Beta)
-
-For Claude, MingleBot now supports a Playwright-powered helper that opens the privacy/export flow in a controlled browser profile.
-
-1. Install browser binary once:
-
-```bash
-pnpm exec playwright install chromium
-```
-
-2. In the app, choose `Claude` and click `Launch Claude Assistant`.
-3. Complete login/bot-check/verification yourself, then request export.
-4. Download the export package and continue with `Import ZIP File`.
-
-Security boundary remains unchanged:
-
-- You handle login and permission steps directly.
-- MingleBot automates the repeatable post-auth navigation where safe.
-
 ## v1 Milestone Status
 
 - [x] Local desktop-style app shell (`Home`, `Import`, `Runs`, `Data`-oriented flow)
