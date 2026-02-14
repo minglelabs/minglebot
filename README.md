@@ -69,9 +69,9 @@ v1 explicitly excludes:
 ## Quick Start (Local)
 
 ```bash
-npm install
-npm run build
-npm run dev
+pnpm install
+pnpm build
+pnpm dev
 ```
 
 Then open `http://localhost:4242`.
