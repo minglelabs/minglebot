@@ -108,6 +108,18 @@ function buildNextNav(prev: NavState, next: Step, replace = false): NavState {
   return { stack: trimmed, index: prev.index + 1 };
 }
 
+function stepFromLocation(): Step | null {
+  const url = new URL(window.location.href);
+  const step = url.searchParams.get("step");
+  return isStep(step) ? step : null;
+}
+
+function urlWithStep(step: Step): string {
+  const url = new URL(window.location.href);
+  url.searchParams.set("step", step);
+  return `${url.pathname}${url.search}${url.hash}`;
+}
+
 function historyStateWithNav(nextNav: NavState): Record<string, unknown> {
   const current = window.history.state;
   const base = current && typeof current === "object" ? (current as Record<string, unknown>) : {};
@@ -229,12 +241,14 @@ export default function App() {
 
     navRef.current = nextNav;
     setNav(nextNav);
+    const activeStep = nextNav.stack[nextNav.index] ?? "provider";
+    const url = urlWithStep(activeStep);
 
     if (options?.replace) {
-      window.history.replaceState(historyStateWithNav(nextNav), "");
+      window.history.replaceState(historyStateWithNav(nextNav), "", url);
       return;
     }
-    window.history.pushState(historyStateWithNav(nextNav), "");
+    window.history.pushState(historyStateWithNav(nextNav), "", url);
   }, []);
 
   const goBack = useCallback(() => {
@@ -256,13 +270,21 @@ export default function App() {
     if (fromHistory) {
       navRef.current = fromHistory;
       setNav(fromHistory);
+      const activeStep = fromHistory.stack[fromHistory.index] ?? "provider";
+      window.history.replaceState(historyStateWithNav(fromHistory), "", urlWithStep(activeStep));
     } else {
-      window.history.replaceState(historyStateWithNav(DEFAULT_NAV_STATE), "");
+      const fromLocation = stepFromLocation();
+      const initialNav: NavState = fromLocation ? { stack: [fromLocation], index: 0 } : DEFAULT_NAV_STATE;
+      navRef.current = initialNav;
+      setNav(initialNav);
+      const activeStep = initialNav.stack[initialNav.index] ?? "provider";
+      window.history.replaceState(historyStateWithNav(initialNav), "", urlWithStep(activeStep));
     }
 
     const handlePopState = (event: PopStateEvent) => {
       const nextNav = readNavFromHistoryState(event.state);
-      const safeNav = nextNav ?? DEFAULT_NAV_STATE;
+      const fromLocation = stepFromLocation();
+      const safeNav = nextNav ?? (fromLocation ? { stack: [fromLocation], index: 0 } : DEFAULT_NAV_STATE);
       navRef.current = safeNav;
       setNav(safeNav);
     };
@@ -292,7 +314,7 @@ export default function App() {
 
         if (runs.length > 0 && navRef.current.stack[navRef.current.index] === "provider") {
           setSelectedProvider("claude");
-          goto("viewer", { replace: true });
+          goto("viewer");
         }
       } catch (error) {
         if (cancelled) return;
