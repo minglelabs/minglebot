@@ -24,7 +24,7 @@ Minglebot is an open-source project to build a single, structured local data hub
 
 Phase 1 is clear and concrete:
 
-- Collect chat data from ChatGPT, Claude, and Gemini
+- Collect chat data from ChatGPT and Claude first (Gemini follows in later milestones)
 - Normalize and organize it into one local filesystem location
 - Make it directly usable by personal agent systems
 
@@ -39,7 +39,7 @@ After this foundation, the scope expands toward broader personal data domains.
 
 Minglebot v1 intentionally uses a manual batch model:
 
-1. User exports full data from provider (ChatGPT/Claude/Gemini).
+1. User exports full data from provider (ChatGPT/Claude).
 2. User downloads export package.
 3. User imports package into Minglebot.
 4. Minglebot validates, extracts, deduplicates, and updates local dataset.
@@ -78,7 +78,7 @@ Then open `http://localhost:4242`.
 
 What you can do now:
 
-1. Open provider export guide links (ChatGPT/Claude/Gemini).
+1. Open provider export guide links (ChatGPT/Claude).
 2. Upload export package (`.zip/.json/.ndjson/.txt`).
 3. Run import with dedupe/upsert.
 4. See run history and copy agent-ready shell commands.
@@ -99,7 +99,7 @@ Data root default:
 
 Current limitation:
 
-- Gemini ingestion path remains partial in v1 and is tracked for v1.5.
+- Gemini ingestion is not exposed in the current v1 UI and remains tracked for v1.5.
 
 ## Use Your Centralized Filesystem
 
