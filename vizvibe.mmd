@@ -54,8 +54,23 @@ flowchart TD
     %% @import_flow_simplification [ai-task, closed, 2026-02-14, nam]
     import_flow_simplification("Import Flow Simplification<br/><sub>Reduced steps, clarified actions,<br/>and aligned run/import transitions<br/>for non-developer usability</sub>")
 
+    %% @history_navigation_sync [ai-task, closed, 2026-02-14, nam]
+    history_navigation_sync("Browser History Sync<br/><sub>Synced step state with URL query<br/>so browser back/forward navigation<br/>works across import and viewer flow</sub>")
+
+    %% @upload_interaction_polish [ai-task, closed, 2026-02-14, nam]
+    upload_interaction_polish("Upload Interaction Polish<br/><sub>Added large drag-and-drop zone,<br/>file replacement/clear actions, and<br/>cleaner import action affordances</sub>")
+
     %% @provider_identity_labels [ai-task, closed, 2026-02-14, nam]
     provider_identity_labels("Provider Identity Labels<br/><sub>Show assistant brand labels and<br/>optional model metadata in message<br/>headers across normalized viewer</sub>")
+
+    %% @conversation_metadata_backfill [ai-task, closed, 2026-02-14, nam]
+    conversation_metadata_backfill("Conversation Metadata Backfill<br/><sub>Recovered missing conversation<br/>titles from source payload fallback<br/>to improve list readability quality</sub>")
+
+    %% @import_feedback_toasts [ai-task, closed, 2026-02-14, nam]
+    import_feedback_toasts("Import Feedback Toasts<br/><sub>Delivered import-complete and<br/>action-result feedback using toast<br/>notifications for clear run status</sub>")
+
+    %% @data_folder_actions [ai-task, closed, 2026-02-14, nam]
+    data_folder_actions("Data Folder Access Actions<br/><sub>Added direct open-folder actions<br/>for data root and import output to<br/>verify results from desktop quickly</sub>")
 
     %% @brand_social_consistency [ai-task, closed, 2026-02-14, nam]
     brand_social_consistency("Brand and Social Consistency<br/><sub>Unified MingleBot casing, favicon<br/>identity, and OG title/description/<br/>image for repo and web previews</sub>")
@@ -127,7 +142,7 @@ flowchart TD
     %% === CONNECTIONS ===
     project_start --> readme_foundation --> architecture_v1 --> filesystem_format_v1 --> uiux_v1_spec --> batch_import_decision
     batch_import_decision --> desktop_shell --> import_intake --> chatgpt_parser_mapper --> claude_parser_mapper --> dedupe_upsert_engine --> runs_and_result_ui --> agent_handoff --> v1_done
-    v1_done --> viewer_workspace_ui --> import_flow_simplification --> provider_identity_labels --> brand_social_consistency --> v1_polish_done
+    v1_done --> viewer_workspace_ui --> import_flow_simplification --> history_navigation_sync --> upload_interaction_polish --> provider_identity_labels --> conversation_metadata_backfill --> import_feedback_toasts --> data_folder_actions --> brand_social_consistency --> v1_polish_done
 
     v1_polish_done --> gemini_path_v1_5
 
@@ -164,8 +179,8 @@ flowchart TD
 
     %% === RECENT WORK HIGHLIGHT ===
     subgraph recent [RECENT]
-        viewer_workspace_ui
-        provider_identity_labels
+        history_navigation_sync
+        conversation_metadata_backfill
         brand_social_consistency
     end
 
@@ -188,7 +203,12 @@ flowchart TD
     style agent_handoff fill:#2d1f4e,stroke:#c084fc,color:#e9d5ff,stroke-width:1px
     style viewer_workspace_ui fill:#2d1f4e,stroke:#c084fc,color:#e9d5ff,stroke-width:1px
     style import_flow_simplification fill:#2d1f4e,stroke:#c084fc,color:#e9d5ff,stroke-width:1px
+    style history_navigation_sync fill:#2d1f4e,stroke:#c084fc,color:#e9d5ff,stroke-width:1px
+    style upload_interaction_polish fill:#2d1f4e,stroke:#c084fc,color:#e9d5ff,stroke-width:1px
     style provider_identity_labels fill:#2d1f4e,stroke:#c084fc,color:#e9d5ff,stroke-width:1px
+    style conversation_metadata_backfill fill:#2d1f4e,stroke:#c084fc,color:#e9d5ff,stroke-width:1px
+    style import_feedback_toasts fill:#2d1f4e,stroke:#c084fc,color:#e9d5ff,stroke-width:1px
+    style data_folder_actions fill:#2d1f4e,stroke:#c084fc,color:#e9d5ff,stroke-width:1px
     style brand_social_consistency fill:#2d1f4e,stroke:#c084fc,color:#e9d5ff,stroke-width:2px
 
     %% Open tasks: green
