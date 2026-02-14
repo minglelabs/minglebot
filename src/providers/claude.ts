@@ -326,11 +326,15 @@ export async function parseClaude(
       if (!providerConversationId) continue;
 
       const conversationId = canonicalId("cnv", "claude", providerConversationId, providerConversationId);
+      const title =
+        (typeof conv.title === "string" && conv.title.trim()) ||
+        (typeof conv.name === "string" && conv.name.trim()) ||
+        undefined;
       const conversation: CanonicalConversation = {
         id: conversationId,
         provider: "claude",
         provider_conversation_id: providerConversationId,
-        title: typeof conv.title === "string" ? conv.title : undefined,
+        title,
         created_at: toIsoOrUndefined(conv.created_at || conv.createdAt || conv.created_time),
         updated_at: toIsoOrUndefined(conv.updated_at || conv.updatedAt || conv.updated_time),
         source_job_id: jobId,
