@@ -280,6 +280,11 @@ export default function App() {
         setDataRoot(status.dataRoot || "-");
         setLastRun(status.lastRun || null);
         setLastRuns(runs);
+
+        if (runs.length > 0 && navRef.current.stack[navRef.current.index] === "provider") {
+          setSelectedProvider("claude");
+          goto("viewer", { replace: true });
+        }
       } catch (error) {
         if (cancelled) return;
         setFeedback(
@@ -294,7 +299,7 @@ export default function App() {
     return () => {
       cancelled = true;
     };
-  }, [setFeedback]);
+  }, [goto, setFeedback]);
 
   useEffect(() => {
     if (selectedProvider && !providers[selectedProvider]) {
@@ -441,7 +446,8 @@ export default function App() {
         setLastRun(status.lastRun || null);
         setLastRuns(runs);
         setFeedback(`Import complete: ${result.jobId}`, "ok");
-        goto("result", { replace: true });
+        setSelectedProvider("claude");
+        goto("viewer", { replace: true });
       } catch (error) {
         setFeedback(`Import failed: ${error instanceof Error ? error.message : String(error)}`, "err");
         goto("upload", { replace: true });
@@ -715,16 +721,26 @@ find "${dataRoot}/canonical" -type f`;
           {step === "viewer" && (
             <div className="grid gap-3 lg:grid-cols-[330px_minmax(0,1fr)]">
               <aside className="rounded-2xl border border-[#efd5a5] bg-[#fff9ec] p-3">
-                <div className="flex gap-2">
+                <div className="flex flex-wrap gap-2">
                   <input
                     type="text"
                     value={claudeSearch}
                     onChange={(event) => setClaudeSearch(event.target.value)}
                     placeholder="Search chats"
-                    className="w-full rounded-xl border border-[#eec78a] bg-white px-3 py-2 text-sm outline-none transition focus:border-[#e6942f]"
+                    className="min-w-0 flex-1 rounded-xl border border-[#eec78a] bg-white px-3 py-2 text-sm outline-none transition focus:border-[#e6942f]"
                   />
                   <button type="button" className={ghostButtonClass} onClick={() => void loadClaudeConversations()}>
                     Refresh
+                  </button>
+                  <button
+                    type="button"
+                    className={ghostButtonClass}
+                    onClick={() => {
+                      clearSelectedFile();
+                      goto("provider");
+                    }}
+                  >
+                    Add Data
                   </button>
                 </div>
 
