@@ -278,10 +278,9 @@ function renderResult() {
   descriptionEl.textContent = "Your local dataset was updated with dedupe/upsert.";
 
   const m = result.counters.messages;
-  const runRows = state.lastRuns
-    .slice(0, 3)
-    .map((row) => `<li>${row.provider} • ${row.status} • ${formatDate(row.started_at)}</li>`)
-    .join("");
+  const cmdText = `rg -n "project|invoice|meeting" "${state.dataRoot}/canonical/messages.ndjson"
+jq -c 'select(.provider=="${result.provider}")' "${state.dataRoot}/canonical/messages.ndjson" | head
+find "${state.dataRoot}/canonical" -type f`;
 
   bodyEl.innerHTML = `
     <div class="metrics">
@@ -294,14 +293,6 @@ function renderResult() {
       <button class="btn-primary" data-action="again">Import Another</button>
       <button class="btn-ghost" data-action="copy">Copy Commands</button>
     </div>
-    <details>
-      <summary>Show small details</summary>
-      <p class="minor">Data root: ${state.dataRoot}</p>
-      <ul class="minor">${runRows || "<li>No run history yet</li>"}</ul>
-      <pre id="commands-block">rg -n "project|invoice|meeting" "${state.dataRoot}/canonical/messages.ndjson"
-jq -c 'select(.provider=="${result.provider}")' "${state.dataRoot}/canonical/messages.ndjson" | head
-find "${state.dataRoot}/canonical" -type f</pre>
-    </details>
   `;
 
   bodyEl.querySelector('[data-action="again"]').addEventListener("click", () => {
@@ -310,12 +301,11 @@ find "${state.dataRoot}/canonical" -type f</pre>
   });
 
   bodyEl.querySelector('[data-action="copy"]').addEventListener("click", async () => {
-    const cmd = bodyEl.querySelector("#commands-block").textContent;
     try {
-      await navigator.clipboard.writeText(cmd);
+      await navigator.clipboard.writeText(cmdText);
       setFeedback("Commands copied.", "ok");
     } catch {
-      setFeedback("Could not copy automatically. Open details and copy manually.", "err");
+      setFeedback("Could not copy automatically.", "err");
     }
   });
 }
