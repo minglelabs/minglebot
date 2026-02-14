@@ -559,19 +559,6 @@ find "${dataRoot}/canonical" -type f`;
                 <button
                   type="button"
                   className={`inline-flex h-9 w-9 items-center justify-center rounded-lg border text-base ${
-                    canGoBack
-                      ? "border-[#4c4338] bg-[#2a251e] text-[#eadbc4]"
-                      : "cursor-not-allowed border-[#3a352f] bg-[#23201b] text-[#6f6458]"
-                  }`}
-                  onClick={goBack}
-                  disabled={!canGoBack}
-                  aria-label="Back"
-                >
-                  ←
-                </button>
-                <button
-                  type="button"
-                  className={`inline-flex h-9 w-9 items-center justify-center rounded-lg border text-base ${
                     canGoForward
                       ? "border-[#4c4338] bg-[#2a251e] text-[#eadbc4]"
                       : "cursor-not-allowed border-[#3a352f] bg-[#23201b] text-[#6f6458]"
