@@ -765,6 +765,15 @@ find "${dataRoot}/canonical" -type f`;
               >
                 Open Export Page
               </button>
+              <button
+                type="button"
+                className={ghostButtonClass}
+                onClick={() => {
+                  goto("upload");
+                }}
+              >
+                Go to Import Page
+              </button>
             </div>
           )}
 
