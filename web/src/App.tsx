@@ -71,6 +71,24 @@ interface NavState {
 }
 
 const DEFAULT_NAV_STATE: NavState = { stack: ["provider"], index: 0 };
+const DEFAULT_PROVIDER_GUIDES: Record<ProviderKey, ProviderGuide> = {
+  chatgpt: {
+    label: "ChatGPT",
+    exportUrl: "https://chatgpt.com/#settings/DataControls"
+  },
+  claude: {
+    label: "Claude",
+    exportUrl: "https://claude.ai/settings/privacy"
+  },
+  gemini: {
+    label: "Gemini",
+    exportUrl: "https://gemini.google.com/app"
+  },
+  cursor: {
+    label: "Cursor",
+    exportUrl: "https://docs.cursor.com/agent/chat/export"
+  }
+};
 
 function isStep(value: unknown): value is Step {
   return (
@@ -81,6 +99,10 @@ function isStep(value: unknown): value is Step {
     value === "result" ||
     value === "viewer"
   );
+}
+
+function isProviderKey(value: unknown): value is ProviderKey {
+  return value === "chatgpt" || value === "claude" || value === "gemini" || value === "cursor";
 }
 
 function isNavState(value: unknown): value is NavState {
@@ -219,7 +241,8 @@ export default function App() {
   const navRef = useRef<NavState>(DEFAULT_NAV_STATE);
   const messagesViewportRef = useRef<HTMLDivElement | null>(null);
 
-  const [providers, setProviders] = useState<Record<string, ProviderGuide>>({});
+  const [providers, setProviders] = useState<Record<ProviderKey, ProviderGuide>>(DEFAULT_PROVIDER_GUIDES);
+  const [serverSupportedProviders, setServerSupportedProviders] = useState<ProviderKey[]>([]);
   const [selectedProvider, setSelectedProvider] = useState<ProviderKey | null>(null);
   const [dataRoot, setDataRoot] = useState("-");
   const [lastRun, setLastRun] = useState<RunRecord | null>(null);
@@ -318,7 +341,9 @@ export default function App() {
         ]);
 
         if (cancelled) return;
-        setProviders(providerMap);
+        const normalizedProviderMap = providerMap as Partial<Record<ProviderKey, ProviderGuide>>;
+        setProviders({ ...DEFAULT_PROVIDER_GUIDES, ...normalizedProviderMap });
+        setServerSupportedProviders(Object.keys(providerMap).filter((key) => isProviderKey(key)));
         setDataRoot(status.dataRoot || "-");
         setLastRun(status.lastRun || null);
         setLastRuns(runs);
@@ -465,6 +490,14 @@ export default function App() {
         return;
       }
 
+      if (!serverSupportedProviders.includes(selectedProvider)) {
+        setFeedback(
+          `Current server build does not support ${selectedProvider} yet. Restart with the latest build.`,
+          "err"
+        );
+        return;
+      }
+
       goto("running");
       setFeedback("Import running...");
 
@@ -496,7 +529,7 @@ export default function App() {
         goto("upload", { replace: true });
       }
     },
-    [goto, selectedFile, selectedProvider, setFeedback]
+    [goto, selectedFile, selectedProvider, serverSupportedProviders, setFeedback]
   );
 
   const commandText = useMemo(() => {
@@ -519,6 +552,14 @@ find "${dataRoot}/canonical" -type f`;
   const selectedClaudeConversation = useMemo(
     () => claudeConversations.find((item) => item.id === selectedClaudeConversationId) || null,
     [claudeConversations, selectedClaudeConversationId]
+  );
+  const serverProviderSet = useMemo(
+    () => new Set<ProviderKey>(serverSupportedProviders),
+    [serverSupportedProviders]
+  );
+  const unsupportedProviderKeys = useMemo(
+    () => (Object.keys(providers) as ProviderKey[]).filter((key) => !serverProviderSet.has(key)),
+    [providers, serverProviderSet]
   );
 
   const provider = selectedProvider ? providers[selectedProvider] : undefined;
@@ -753,21 +794,40 @@ find "${dataRoot}/canonical" -type f`;
           {step === "provider" && (
             <div className="grid gap-2.5">
               <div className="grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-2.5">
-                {Object.entries(providers).map(([key, item]) => (
-                  <button
-                    key={key}
-                    type="button"
-                    className="cursor-pointer rounded-[14px] border border-[#f1d9aa] bg-[#fffaf1] px-3 py-3 text-left text-[#2a2012] transition hover:-translate-y-px hover:border-[#f2bc61]"
-                    onClick={() => {
-                      setSelectedProvider(key as ProviderKey);
-                      clearSelectedFile();
-                      goto("guide");
-                    }}
-                  >
-                    <span className="block text-base font-bold">{item.label}</span>
-                  </button>
-                ))}
+                {Object.entries(providers).map(([key, item]) => {
+                  const providerKey = key as ProviderKey;
+                  const supported = serverProviderSet.has(providerKey);
+
+                  return (
+                    <button
+                      key={key}
+                      type="button"
+                      disabled={!supported}
+                      className={`rounded-[14px] border px-3 py-3 text-left text-[#2a2012] transition ${
+                        supported
+                          ? "cursor-pointer border-[#f1d9aa] bg-[#fffaf1] hover:-translate-y-px hover:border-[#f2bc61]"
+                          : "cursor-not-allowed border-[#ebdfc8] bg-[#f7f1e6] opacity-70"
+                      }`}
+                      onClick={() => {
+                        if (!supported) return;
+                        setSelectedProvider(providerKey);
+                        clearSelectedFile();
+                        goto("guide");
+                      }}
+                    >
+                      <span className="block text-base font-bold">{item.label}</span>
+                      {!supported && (
+                        <span className="mt-1 block text-xs font-medium text-[#9c7a52]">Restart server to enable</span>
+                      )}
+                    </button>
+                  );
+                })}
               </div>
+              {unsupportedProviderKeys.length > 0 && (
+                <p className="text-xs text-[#9a7441]">
+                  Detected older server API. Restart with latest build to enable all providers.
+                </p>
+              )}
               <button
                 type="button"
                 className={`${ghostButtonClass} justify-center`}
