@@ -244,11 +244,9 @@ button,
 }
 
 .drop-icon svg {
-  width: 92px;
-  height: 92px;
-  fill: #f6b24d;
-  stroke: #7a5422;
-  stroke-width: 0.7;
+  width: 88px;
+  height: 88px;
+  color: #7a5422;
 }
 
 .drop-file {

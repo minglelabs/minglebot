@@ -139,10 +139,13 @@ function renderUpload() {
       <input id="package" name="package" type="file" accept=".zip" hidden />
       <button id="drop-zone" class="drop-zone" type="button">
         <span id="drop-icon" class="drop-icon" hidden aria-hidden="true">
-          <svg viewBox="0 0 24 24">
-            <path d="M6 2h8l4 4v16H6z"></path>
-            <path d="M14 2v4h4"></path>
-            <path d="M9 11h6M9 14h6M9 17h6"></path>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M16 22h2a2 2 0 0 0 2-2V7l-5-5H6a2 2 0 0 0-2 2v3"></path>
+            <path d="M14 2v4a2 2 0 0 0 2 2h4"></path>
+            <circle cx="10" cy="20" r="2"></circle>
+            <path d="M10 7V6"></path>
+            <path d="M10 12v-1"></path>
+            <path d="M10 18v-2"></path>
           </svg>
         </span>
         <span id="drop-title" class="drop-title">Drop ZIP Here</span>
