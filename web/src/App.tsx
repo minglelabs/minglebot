@@ -518,10 +518,10 @@ find "${dataRoot}/canonical" -type f`;
 
   if (step === "viewer") {
     return (
-      <main className="min-h-screen bg-[#1f1d1a] text-[#e9e0d3]">
-        <div className="grid min-h-screen md:grid-cols-[320px_minmax(0,1fr)]">
-          <aside className="flex min-h-[42vh] flex-col border-b border-[#35312a] bg-gradient-to-b from-[#2b2722] via-[#231f1b] to-[#1a1815] md:min-h-screen md:border-b-0 md:border-r">
-            <header className="border-b border-[#35312a] px-4 py-4">
+      <main className="h-screen overflow-hidden bg-[#1f1d1a] text-[#e9e0d3]">
+        <div className="grid h-full min-h-0 grid-cols-[320px_minmax(0,1fr)]">
+          <aside className="flex min-h-0 flex-col border-r border-[#35312a] bg-gradient-to-b from-[#2b2722] via-[#231f1b] to-[#1a1815]">
+            <header className="shrink-0 border-b border-[#35312a] px-4 py-4">
               <div className="flex items-center gap-3">
                 <div className="grid h-8 w-8 place-content-center rounded-md bg-gradient-to-br from-[#f7ba6d] to-[#e4933c] text-sm font-black text-[#24150a]">
                   M
@@ -588,7 +588,7 @@ find "${dataRoot}/canonical" -type f`;
               </div>
             </header>
 
-            <div className="flex-1 space-y-1.5 overflow-y-auto px-2 py-2">
+            <div className="min-h-0 flex-1 space-y-1.5 overflow-y-auto px-2 py-2">
               {isClaudeConversationsLoading && (
                 <p className="rounded-lg border border-[#3b352d] bg-[#26221d] p-3 text-sm text-[#c8baa6]">
                   Loading conversations...
@@ -630,8 +630,8 @@ find "${dataRoot}/canonical" -type f`;
             </div>
           </aside>
 
-          <section className="flex min-h-[58vh] flex-col md:min-h-screen">
-            <header className="border-b border-[#35312a] bg-[#22201cd6] px-5 py-4 backdrop-blur">
+          <section className="flex min-h-0 flex-col overflow-hidden">
+            <header className="shrink-0 border-b border-[#35312a] bg-[#22201cd6] px-5 py-4 backdrop-blur">
               <div className="text-[21px] font-semibold text-[#f2e7d6]">
                 {selectedClaudeConversation?.title || "Select a conversation"}
               </div>
@@ -642,7 +642,7 @@ find "${dataRoot}/canonical" -type f`;
               </div>
             </header>
 
-            <div ref={messagesViewportRef} className="flex-1 overflow-y-auto px-4 py-6 sm:px-6">
+            <div ref={messagesViewportRef} className="min-h-0 flex-1 overflow-y-auto px-4 py-6 sm:px-6">
               <div className="mx-auto w-full max-w-[940px] space-y-4">
                 {isClaudeMessagesLoading && (
                   <p className="rounded-xl border border-[#3b352d] bg-[#26221d] p-4 text-sm text-[#d0c2ad]">
