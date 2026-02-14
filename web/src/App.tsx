@@ -57,6 +57,7 @@ interface ClaudeConversationSummary {
 interface ClaudeMessageItem {
   id: string;
   conversation_id: string;
+  provider?: string;
   model?: string;
   role: string;
   text: string;
@@ -147,6 +148,14 @@ function roleLabel(role: string): string {
   if (lower === "human" || lower === "user") return "You";
   if (lower === "assistant") return "Claude";
   return role;
+}
+
+function assistantProviderLabel(provider?: string): string {
+  const value = (provider || "").toLowerCase();
+  if (value === "chatgpt") return "ChatGPT";
+  if (value === "claude") return "Claude";
+  if (value === "gemini") return "Gemini";
+  return "Assistant";
 }
 
 function cleanViewerText(text: string): string {
@@ -672,7 +681,7 @@ find "${dataRoot}/canonical" -type f`;
                     const isAssistant = message.role.toLowerCase() === "assistant";
                     const cleaned = cleanViewerText(message.text || "");
                     const roleText = isAssistant
-                      ? `Claude${message.model ? ` • ${message.model}` : ""}`
+                      ? `${assistantProviderLabel(message.provider)}${message.model ? ` • ${message.model}` : ""}`
                       : roleLabel(message.role);
                     return (
                       <article key={message.id} className={`flex ${isAssistant ? "justify-start" : "justify-end"}`}>
