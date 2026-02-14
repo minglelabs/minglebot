@@ -1,23 +1,21 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-label="MingleBot favicon">
   <defs>
-    <linearGradient id="minglebot-fg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#f3962f" />
-      <stop offset="52%" stop-color="#f6bf4f" />
-      <stop offset="100%" stop-color="#f9e29d" />
-    </linearGradient>
-    <linearGradient id="minglebot-bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#fff7df" />
-      <stop offset="100%" stop-color="#fff0cb" />
+    <linearGradient id="minglebot-icon" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f7ba6d" />
+      <stop offset="100%" stop-color="#e4933c" />
     </linearGradient>
   </defs>
-  <rect x="16" y="16" width="224" height="224" rx="56" fill="url(#minglebot-bg)" />
-  <rect x="24" y="24" width="208" height="208" rx="48" fill="url(#minglebot-fg)" />
-  <path
-    d="M64 186V70L128 138L192 70V186"
-    fill="none"
-    stroke="#fffdf8"
-    stroke-width="26"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-  />
+  <rect x="24" y="24" width="208" height="208" rx="48" fill="url(#minglebot-icon)" />
+  <text
+    x="128"
+    y="156"
+    text-anchor="middle"
+    fill="#24150a"
+    font-family="Pretendard, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
+    font-size="124"
+    font-weight="900"
+    letter-spacing="-4"
+  >
+    M
+  </text>
 </svg>
