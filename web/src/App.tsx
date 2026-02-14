@@ -773,7 +773,7 @@ find "${dataRoot}/canonical" -type f`;
                   goto("upload");
                 }}
               >
-                Go to Import Page
+                Import ZIP File
               </button>
             </div>
           )}
