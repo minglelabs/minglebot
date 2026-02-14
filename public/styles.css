@@ -160,13 +160,6 @@ h1 {
   font-size: 16px;
 }
 
-.provider-status {
-  display: inline-block;
-  margin-top: 6px;
-  font-size: 12px;
-  color: #7a5a33;
-}
-
 .controls {
   display: flex;
   gap: 8px;

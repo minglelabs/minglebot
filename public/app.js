@@ -93,7 +93,6 @@ function renderProvider() {
       ([key, provider]) => `
       <button class="provider-btn" data-provider="${key}">
         <span class="provider-name">${provider.label}</span>
-        <span class="provider-status">${provider.status}</span>
       </button>
     `
     )

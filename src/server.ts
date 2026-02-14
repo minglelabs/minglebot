@@ -17,21 +17,14 @@ const execFileAsync = promisify(execFile);
 const uploadRoot = path.join(layout.root, ".uploads");
 const upload = multer({ dest: uploadRoot });
 
-const providerGuides: Record<Provider, { exportUrl: string; label: string; status: "ready" | "partial" }> = {
+const providerGuides: Record<Exclude<Provider, "gemini">, { exportUrl: string; label: string }> = {
   chatgpt: {
     label: "ChatGPT",
-    exportUrl: "https://chatgpt.com/#settings/DataControls",
-    status: "ready"
+    exportUrl: "https://chatgpt.com/#settings/DataControls"
   },
   claude: {
     label: "Claude",
-    exportUrl: "https://claude.ai/settings/privacy",
-    status: "ready"
-  },
-  gemini: {
-    label: "Gemini",
-    exportUrl: "https://gemini.google.com/app",
-    status: "partial"
+    exportUrl: "https://claude.ai/settings/privacy"
   }
 };
 
@@ -40,8 +33,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(process.cwd(), "public")));
 
 function parseProvider(value: unknown): Provider {
-  if (value === "chatgpt" || value === "claude" || value === "gemini") return value;
-  throw new Error("Invalid provider. Use chatgpt|claude|gemini.");
+  if (value === "chatgpt" || value === "claude") return value;
+  throw new Error("Invalid provider. Use chatgpt|claude.");
 }
 
 function parseBoolean(value: unknown): boolean {
