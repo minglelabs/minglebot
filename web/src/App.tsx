@@ -588,7 +588,7 @@ find "${dataRoot}/canonical" -type f`;
               </div>
             </header>
 
-            <div className="min-h-0 flex-1 space-y-1.5 overflow-y-auto px-2 py-2">
+            <div className="no-scrollbar min-h-0 flex-1 space-y-1.5 overflow-y-auto px-2 py-2">
               {isClaudeConversationsLoading && (
                 <p className="rounded-lg border border-[#3b352d] bg-[#26221d] p-3 text-sm text-[#c8baa6]">
                   Loading conversations...
@@ -642,7 +642,10 @@ find "${dataRoot}/canonical" -type f`;
               </div>
             </header>
 
-            <div ref={messagesViewportRef} className="min-h-0 flex-1 overflow-y-auto px-4 py-6 sm:px-6">
+            <div
+              ref={messagesViewportRef}
+              className="no-scrollbar min-h-0 flex-1 overflow-y-auto px-4 py-6 sm:px-6"
+            >
               <div className="mx-auto w-full max-w-[940px] space-y-4">
                 {isClaudeMessagesLoading && (
                   <p className="rounded-xl border border-[#3b352d] bg-[#26221d] p-4 text-sm text-[#d0c2ad]">

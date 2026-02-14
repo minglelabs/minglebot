@@ -29,3 +29,12 @@ body {
     radial-gradient(circle at 85% 20%, #ffe6a8 0%, transparent 30%),
     linear-gradient(155deg, #fff8eb, #ffeec8);
 }
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
