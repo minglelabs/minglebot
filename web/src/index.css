@@ -17,16 +17,15 @@ body,
   min-height: 100%;
 }
 
+html {
+  font-family: Pretendard, "Pretendard Variable", "Apple SD Gothic Neo", "Noto Sans KR", "Segoe UI", sans-serif;
+}
+
 body {
   min-height: 100vh;
-  font-family: "Avenir Next", "Nunito Sans", "Segoe UI", sans-serif;
   color: #2a2012;
   background:
     radial-gradient(circle at 15% 15%, #ffdca0 0%, transparent 36%),
     radial-gradient(circle at 85% 20%, #ffe6a8 0%, transparent 30%),
     linear-gradient(155deg, #fff8eb, #ffeec8);
-}
-
-.logo-font {
-  font-family: Pretendard, "Pretendard Variable", "Avenir Next", "Nunito Sans", sans-serif;
 }
