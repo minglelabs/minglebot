@@ -585,6 +585,9 @@ find "${dataRoot}/canonical" -type f`;
                   placeholder="Search chats"
                   className="w-full rounded-lg border border-[#4f463b] bg-[#1e1b17] px-3 py-2 text-sm text-[#efe4d2] outline-none placeholder:text-[#8f8475] focus:border-[#7f6848]"
                 />
+                <div className="mt-2 text-xs text-[#a9957d]">
+                  Total conversations: {claudeConversations.length}
+                </div>
               </div>
             </header>
 
