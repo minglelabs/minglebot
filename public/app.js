@@ -4,10 +4,12 @@ const descriptionEl = document.getElementById("step-description");
 const bodyEl = document.getElementById("step-body");
 const feedbackEl = document.getElementById("feedback");
 const backButtonEl = document.getElementById("back-button");
+const forwardButtonEl = document.getElementById("forward-button");
 
 const state = {
   step: "provider",
   history: [],
+  future: [],
   providers: {},
   selectedProvider: null,
   dataRoot: "-",
@@ -48,9 +50,16 @@ function setFeedback(message, tone = "") {
 }
 
 function goto(step, options = {}) {
-  const { replace = false } = options;
+  const { replace = false, fromHistory = false, fromForward = false } = options;
   if (!replace && state.step !== step) {
-    state.history.push(state.step);
+    if (fromHistory) {
+      // user pressed Back; current step is already pushed to future stack
+    } else if (fromForward) {
+      // user pressed Forward; current step is already pushed to history stack
+    } else {
+      state.history.push(state.step);
+      state.future = [];
+    }
   }
   state.step = step;
   render();
@@ -62,8 +71,14 @@ function goBack() {
     render();
     return;
   }
-  state.step = state.history.pop();
-  render();
+  state.future.push(state.step);
+  goto(state.history.pop(), { fromHistory: true });
+}
+
+function goForward() {
+  if (!state.future.length) return;
+  state.history.push(state.step);
+  goto(state.future.pop(), { fromForward: true });
 }
 
 function renderProvider() {
@@ -229,7 +244,9 @@ find "${state.dataRoot}/canonical" -type f</pre>
 }
 
 function render() {
-  backButtonEl.disabled = state.step === "running";
+  const running = state.step === "running";
+  backButtonEl.disabled = running || state.history.length === 0;
+  forwardButtonEl.disabled = running || state.future.length === 0;
 
   switch (state.step) {
     case "provider":
@@ -274,4 +291,9 @@ init().catch((error) => {
 backButtonEl.addEventListener("click", () => {
   if (state.step === "running") return;
   goBack();
+});
+
+forwardButtonEl.addEventListener("click", () => {
+  if (state.step === "running") return;
+  goForward();
 });

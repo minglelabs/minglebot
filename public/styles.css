@@ -97,6 +97,9 @@ h1 {
 
 .footer-controls {
   margin-top: 16px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
 .minor {
@@ -256,6 +259,11 @@ input[type="file"] {
 }
 
 #back-button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+#forward-button:disabled {
   opacity: 0.45;
   cursor: not-allowed;
 }
