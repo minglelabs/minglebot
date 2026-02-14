@@ -45,8 +45,9 @@ body {
 
 .logo {
   font-size: 40px;
-  font-weight: 800;
-  letter-spacing: 0.4px;
+  font-family: Menlo, Monaco, "SFMono-Regular", Consolas, monospace;
+  font-weight: 600;
+  letter-spacing: 0.2px;
 }
 
 .tagline {
