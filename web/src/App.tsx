@@ -131,7 +131,7 @@ function formatDateTime(iso?: string): string {
 function roleLabel(role: string): string {
   const lower = role.toLowerCase();
   if (lower === "human" || lower === "user") return "You";
-  if (lower === "assistant") return "Claude";
+  if (lower === "assistant") return "Assistant";
   return role;
 }
 
@@ -341,7 +341,7 @@ export default function App() {
       setSelectedClaudeConversationId("");
       setClaudeMessages([]);
       setFeedback(
-        `Failed to load Claude conversations: ${error instanceof Error ? error.message : String(error)}`,
+        `Failed to load conversations: ${error instanceof Error ? error.message : String(error)}`,
         "err"
       );
     } finally {
@@ -365,7 +365,7 @@ export default function App() {
       } catch (error) {
         setClaudeMessages([]);
         setFeedback(
-          `Failed to load Claude messages: ${error instanceof Error ? error.message : String(error)}`,
+          `Failed to load messages: ${error instanceof Error ? error.message : String(error)}`,
           "err"
         );
       } finally {
@@ -597,7 +597,7 @@ find "${dataRoot}/canonical" -type f`;
 
               {!isClaudeConversationsLoading && filteredClaudeConversations.length === 0 && (
                 <p className="rounded-lg border border-[#3b352d] bg-[#26221d] p-3 text-sm text-[#c8baa6]">
-                  No imported Claude conversations found.
+                  No imported conversations found.
                 </p>
               )}
 
@@ -745,7 +745,7 @@ find "${dataRoot}/canonical" -type f`;
                   goto("viewer");
                 }}
               >
-                View Claude Chats
+                Open Conversation Viewer
               </button>
             </div>
           )}
@@ -905,7 +905,7 @@ find "${dataRoot}/canonical" -type f`;
                     goto("viewer");
                   }}
                 >
-                  View Claude Chats
+                  Open Conversation Viewer
                 </button>
               </div>
             </>
