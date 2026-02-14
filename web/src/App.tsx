@@ -558,19 +558,6 @@ find "${dataRoot}/canonical" -type f`;
               <div className="mt-4 flex flex-wrap gap-2">
                 <button
                   type="button"
-                  className={`inline-flex h-9 w-9 items-center justify-center rounded-lg border text-base ${
-                    canGoForward
-                      ? "border-[#4c4338] bg-[#2a251e] text-[#eadbc4]"
-                      : "cursor-not-allowed border-[#3a352f] bg-[#23201b] text-[#6f6458]"
-                  }`}
-                  onClick={goForward}
-                  disabled={!canGoForward}
-                  aria-label="Forward"
-                >
-                  →
-                </button>
-                <button
-                  type="button"
                   className="inline-flex h-9 min-w-[96px] items-center justify-center rounded-lg border border-[#5f4d35] bg-[#3a2e20] px-3 text-sm font-semibold text-[#f5d6a8] transition hover:bg-[#473827]"
                   onClick={() => {
                     clearSelectedFile();
